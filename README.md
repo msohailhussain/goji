@@ -8,5 +8,5 @@
 
 If you want to solve multiple problems simultanously (like in contests) just copy paste "problem" folder for each problem
 
-## Go Docs
+## Go docs
 https://go101.org/article/type-system-overview.html
