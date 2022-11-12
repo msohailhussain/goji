@@ -6,25 +6,6 @@ import (
 	"os"
 )
 
-func solve() interface{} {
-	return 23
-}
-
-func main() {
-	// Leave only one:
-	io := NewFileIO()
-	//io := NewStdIO()
-	defer io.Flush()
-
-	T := io.ScanInt32()
-	var t int32
-	for t = 0; t < T; t++ {
-		io.Print("Case #", t, ": ")
-		result := fmt.Sprintf("Case #%d: %d", solve())
-		fmt.Println(result)
-	}
-}
-
 /*
 	type Scalar interface {
 		~int8 | ~uint8 | ~int16 | ~uint16 | ~int32  | ~uint32 | ~int64 | ~uint64 | ~int | ~uint | ~uintptr | ~float32 | ~float64
@@ -51,19 +32,16 @@ func Min(a, b int) int {
 	return b
 }
 
-func removeDuplicates(s string) string {
-	st := make([]byte, len(s))
+func solve() {
 
-	j := 0
-	for i := 0; i < len(s); i++ {
-		st[j] = s[i]
-		if j > 0 && s[j] == s[j-1] {
-			j--
-		} else {
-			j++
-		}
-	}
-	return string(st[:j])
+}
+
+func main() {
+	// Leave only one:
+	io := NewFileIO()
+	//io := NewStdIO()
+
+	io.Flush()
 }
 
 type IO struct {
@@ -104,8 +82,8 @@ func (io *IO) ScanFloat64() (x float64) { _, _ = fmt.Fscan(io.r, &x); return }
 
 func (io *IO) ScanString() (x string) { _, _ = fmt.Fscan(io.r, &x); return }
 
-func (io *IO) Print(x ...interface{})   { fmt.Fprint(io.w, x...) }
-func (io *IO) PrintLn(x ...interface{}) { fmt.Fprintln(io.w, x...) }
+func (io *IO) Print(x ...any)   { fmt.Fprint(io.w, x...) }
+func (io *IO) PrintLn(x ...any) { fmt.Fprintln(io.w, x...) }
 
 func (io *IO) Flush() {
 	io.w.Flush()
