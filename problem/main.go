@@ -6,7 +6,6 @@ import (
 	"os"
 )
 
-
 // For GoogleKickStart
 func main() {
 	io := NewFileIO()
@@ -21,13 +20,6 @@ func main() {
 	}
 }
 
-// For LeetCode
-func main() {
-	io := NewStdIO()
-	defer io.Flush()
-
-	io.PrintLn(/* CALL SOLVE FUNCTION HERE */)
-}
 
 // For Hackerrank
 func main(){
@@ -44,8 +36,18 @@ func main(){
 }
 
 
+// For LeetCode
+func main() {
+	io := NewStdIO()
+	defer io.Flush()
+
+	io.PrintLn(/* CALL SOLVE FUNCTION HERE */)
+}
+
+// YOUR SOLVE FUNCTION HERE
 
 
+////////////////////////////////////////////////////////////////////////////
 
 /*
 	type Scalar interface {
@@ -57,22 +59,10 @@ func main(){
 		return b
 	}
 */
-const MAXINT32 = 2147483647
-const MININT32 = -2147483648
 
-func Max(a, b int) int {
-	if a >= b {
-		return a
-	}
-	return b
-}
-func Min(a, b int) int {
-	if a <= b {
-		return a
-	}
-	return b
-}
-
+//////////////
+// IO STUFF //
+//////////////
 type IO struct {
 	r *bufio.Reader
 	w *bufio.Writer
