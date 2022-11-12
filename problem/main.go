@@ -6,6 +6,47 @@ import (
 	"os"
 )
 
+
+// For GoogleKickStart
+func main() {
+	io := NewFileIO()
+	defer io.Flush()
+
+	T := io.ScanInt32()
+	for t := int32(0); t < T; t++ {
+
+		// SOLVE HERE
+
+		io.Print("Case #", t, ": ", /* SOLUTIONS HERE */, "\n")
+	}
+}
+
+// For LeetCode
+func main() {
+	io := NewStdIO()
+	defer io.Flush()
+
+	io.PrintLn(/* CALL SOLVE FUNCTION HERE */)
+}
+
+// For Hackerrank
+func main(){
+	io := NewStdIO()
+	defer io.Flush()
+
+	T := io.ScanInt32()
+	for t := int32(0); t < T; t++ {
+
+		// SOLVE HERE
+
+		io.PrintLn(/* SOLUTIONS HERE */)
+	}
+}
+
+
+
+
+
 /*
 	type Scalar interface {
 		~int8 | ~uint8 | ~int16 | ~uint16 | ~int32  | ~uint32 | ~int64 | ~uint64 | ~int | ~uint | ~uintptr | ~float32 | ~float64
@@ -30,18 +71,6 @@ func Min(a, b int) int {
 		return a
 	}
 	return b
-}
-
-func solve() {
-
-}
-
-func main() {
-	// Leave only one:
-	io := NewFileIO()
-	//io := NewStdIO()
-
-	io.Flush()
 }
 
 type IO struct {
@@ -82,8 +111,8 @@ func (io *IO) ScanFloat64() (x float64) { _, _ = fmt.Fscan(io.r, &x); return }
 
 func (io *IO) ScanString() (x string) { _, _ = fmt.Fscan(io.r, &x); return }
 
-func (io *IO) Print(x ...any)   { fmt.Fprint(io.w, x...) }
-func (io *IO) PrintLn(x ...any) { fmt.Fprintln(io.w, x...) }
+func (io *IO) Print(x ...interface{})   { fmt.Fprint(io.w, x...) }
+func (io *IO) PrintLn(x ...interface{}) { fmt.Fprintln(io.w, x...) }
 
 func (io *IO) Flush() {
 	io.w.Flush()
