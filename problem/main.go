@@ -6,69 +6,119 @@ import (
 	"os"
 )
 
-// For GoogleKickStart
-func main() {
-	io := NewFileIO()
-	defer io.Flush()
-
-	T := io.ScanInt32()
-	for t := int32(0); t < T; t++ {
-
-		// SOLVE HERE
-
-		io.Print("Case #", t, ": ", /* SOLUTIONS HERE */, "\n")
-	}
-}
-
-
-// For Hackerrank
-func main(){
-	io := NewStdIO()
-	defer io.Flush()
-
-	T := io.ScanInt32()
-	for t := int32(0); t < T; t++ {
-
-		// SOLVE HERE
-
-		io.PrintLn(/* SOLUTIONS HERE */)
-	}
-}
-
-
 // For LeetCode
 func main() {
-	io := NewStdIO()
-	defer io.Flush()
-
-	io.PrintLn(/* CALL SOLVE FUNCTION HERE */)
+	io := newStdIO()
+	defer io.flush()
+	io.printLn( /* CALL SOLVE FUNCTION HERE */ )
 }
 
 // YOUR SOLVE FUNCTION HERE
 
+// For GoogleKickStart
+func main() {
+	io := newStdIO()
+	defer io.flush()
+	T := io.ScanUInt16()
+	for t := uint16(1); t <= T; t++ {
+		io.print("Case #", t, ": ", solve(&io))
+	}
+}
+func solve(io *IO) string {
+
+	// SOLVE HERE
+
+	return fmt.Sprintln( /* SOLUTIONS HERE */ )
+}
+
+// For Hackerrank
+func main() {
+	io := newStdIO()
+	defer io.flush()
+	for T := io.ScanUInt16(); T > 0; T-- {
+		io.print(solve(&io))
+	}
+}
+func solve(io *IO) string {
+
+	// SOLVE HERE
+
+	return fmt.Sprintln( /* SOLUTIONS HERE */ )
+}
+
+// For Codeforces
+func main() {
+	io := newFileIO()
+	defer io.flush()
+	for T := io.ScanUInt16(); T > 0; T-- {
+		io.print(solve(&io))
+	}
+}
+func solve(io *IO) string {
+
+	// SOLVE HERE
+
+	return fmt.Sprintln( /* SOLUTIONS HERE */ )
+}
 
 ////////////////////////////////////////////////////////////////////////////
 
-/*
-	type Scalar interface {
-		~int8 | ~uint8 | ~int16 | ~uint16 | ~int32  | ~uint32 | ~int64 | ~uint64 | ~int | ~uint | ~uintptr | ~float32 | ~float64
-	}
+////////////////
+// INTERFACES //
+////////////////
 
-	func max[T Scalar](a T, b T) T {
-		if a >= b { return a}
-		return b
-	}
-*/
+// From https://pkg.go.dev/golang.org/x/exp/constraints
+type Signed interface {
+	~int | ~int8 | ~int16 | ~int32 | ~int64
+}
+type Unsigned interface {
+	~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr
+}
+type Integer interface {
+	Signed | Unsigned
+}
+type Float interface {
+	~float32 | ~float64
+}
+type Complex interface {
+	~complex64 | ~complex128
+}
+type Ordered interface {
+	Integer | Float | ~string
+}
 
-//////////////
+///////////
+// TYPES //
+///////////
+
+// # TODO type SingleLinkedList
+
+///////////////
+// FUNCTIONS //
+///////////////
+
+func Max[T Ordered](a T, b T) T {
+	if a >= b {
+		return a
+	}
+	return b
+}
+func Min[T Ordered](a T, b T) T {
+	if a <= b {
+		return a
+	}
+	return b
+}
+
+// ////////////
 // IO STUFF //
-//////////////
+// ////////////
 type IO struct {
 	r *bufio.Reader
 	w *bufio.Writer
 }
 
-func NewStdIO() IO {
+func newStdIO() IO {
 	return IO{
 		r: bufio.NewReader(os.Stdin),
 		w: bufio.NewWriter(os.Stdout),
@@ -76,10 +126,9 @@ func NewStdIO() IO {
 }
 
 // Is assumed that both files exists
-func NewFileIO() IO {
+func newFileIO() IO {
 	in, _ := os.Open("input.txt")
 	ou, _ := os.OpenFile("output.txt", os.O_CREATE|os.O_RDWR|os.O_TRUNC, os.ModePerm)
-
 	return IO{
 		r: bufio.NewReader(in),
 		w: bufio.NewWriter(ou),
@@ -101,9 +150,7 @@ func (io *IO) ScanFloat64() (x float64) { _, _ = fmt.Fscan(io.r, &x); return }
 
 func (io *IO) ScanString() (x string) { _, _ = fmt.Fscan(io.r, &x); return }
 
-func (io *IO) Print(x ...interface{})   { fmt.Fprint(io.w, x...) }
-func (io *IO) PrintLn(x ...interface{}) { fmt.Fprintln(io.w, x...) }
+func (io *IO) print(x ...interface{})   { fmt.Fprint(io.w, x...) }
+func (io *IO) printLn(x ...interface{}) { fmt.Fprintln(io.w, x...) }
 
-func (io *IO) Flush() {
-	io.w.Flush()
-}
+func (io *IO) flush() { io.w.Flush() }
