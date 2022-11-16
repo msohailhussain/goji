@@ -6,7 +6,8 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"golang.Go"
+				"golang.Go",
+				"SantaCodes.santacodes-region-viewer"
 			]
 		}
 	}
