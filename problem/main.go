@@ -185,13 +185,13 @@ func (l *SingleLinkedList[T, I]) ToString() string {
 //#endregion
 
 // #region FUNCTIONS
-func Max[T Ordered](a T, b T) T {
+func Max[T Ordered](a, b T) T {
 	if a >= b {
 		return a
 	}
 	return b
 }
-func Min[T Ordered](a T, b T) T {
+func Min[T Ordered](a, b T) T {
 	if a <= b {
 		return a
 	}
