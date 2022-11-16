@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"os"
 )
 
@@ -333,6 +334,10 @@ func Min[T Ordered](a, b T) T {
 	}
 	return b
 }
+func Abs[T Integer | Float](a T) T {
+	if a < 0 { return -a }
+	return a
+}
 func SwapAny[T any](a, b *T) {
 	tmp := *a
 	*a = *b
@@ -357,6 +362,11 @@ func GCD[T Unsigned](a, b T) T {
 		b = a
 		a = r
 	}
+}
+
+// At least one != 0
+func LCM[T Unsigned](a, b T) T {
+	return (a*b)/GCD(a, b)
 }
 
 func First[T any](a T, _ any) T { return a }
