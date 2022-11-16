@@ -16,6 +16,7 @@ If you want to solve multiple problems simultanously (like in contests) just cop
 ## Naming conventions:
 1. For any function/method that can be directly be used in competition use uppercase, otherwise use lowercase
 2. For any type/interface use lowercase
+3. Do not use underlying types for the template
 
 ## Go docs
 https://go101.org/article/type-system-overview.html

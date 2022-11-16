@@ -12,6 +12,7 @@ func main() {
 	defer io.flush()
 	io.printLn( /* CALL SOLVE FUNCTION HERE */ )
 }
+
 // YOUR SOLVE FUNCTION HERE
 
 // For GoogleKickStart
@@ -54,7 +55,22 @@ func solve(io *IO) string {
 	return fmt.Sprintln( /* SOLUTIONS HERE */ )
 }
 
-//#region INTERFACES
+// #region UNDERLYING TYPES
+type i8 int8
+type i16 int16
+type i32 int32
+type i64 int64
+type u8 uint8
+type u16 uint16
+type u32 uint32
+type u64 uint64
+type f32 float32
+type f64 float64
+type c64 complex64
+type c128 complex128
+
+// #endregion
+// #region INTERFACES
 
 // From https://pkg.go.dev/golang.org/x/exp/constraints
 type Signed interface {
@@ -76,9 +92,8 @@ type Ordered interface {
 	Integer | Float | ~string
 }
 
-//#endregion
-
-// #region TYPES AND METHODS
+// #endregion
+// #region TYPES WITH METHODS
 // #region SingleLinkedList
 type singleLinkedListNode[T comparable] struct {
 	Value T
@@ -91,14 +106,20 @@ type SingleLinkedList[ValueType comparable, IndexType Unsigned] struct {
 	length IndexType
 }
 
-func NewSingleLinkedList[T comparable, I Unsigned]() *SingleLinkedList[T, I] {
-	return &SingleLinkedList[T, I]{
+func NewSingleLinkedList[ValueType comparable, IndexType Unsigned]() *SingleLinkedList[ValueType, IndexType] {
+	return &SingleLinkedList[ValueType, IndexType]{
 		first:  nil,
 		last:   nil,
 		length: 0,
 	}
 }
 func (l *SingleLinkedList[T, I]) GetLength() I { return l.length }
+
+// length > 0
+func (l *SingleLinkedList[T, I]) First() T { return l.first.Value }
+
+// length > 0
+func (l *SingleLinkedList[T, I]) Last() T { return l.last.Value }
 
 func (l *SingleLinkedList[T, I]) InsertFirst(value T) {
 	if l.length == 0 {
@@ -161,7 +182,9 @@ func (l *SingleLinkedList[T, I]) InsertAt(index I, value T) {
 func (l *SingleLinkedList[T, I]) Contains(value T) bool {
 	tmp := l.first
 	for i := I(0); i < l.length; i++ {
-		if tmp.Value == value {	return true }
+		if tmp.Value == value {
+			return true
+		}
 		tmp = tmp.Next
 	}
 	return false
@@ -171,18 +194,131 @@ func (l *SingleLinkedList[T, I]) Clear() {
 	l.last = nil
 	l.length = 0
 }
-func (l *SingleLinkedList[T, I]) ToString() string {
-	slice := make([]any, l.length)
+
+// index < length
+func (l *SingleLinkedList[T, I]) GetElementAt(index I) T {
+	n := l.first
+	for index > 0 {
+		n = n.Next
+		index--
+	}
+	return n.Value
+}
+
+// index < length
+func (l *SingleLinkedList[T, I]) SetElementAt(index I, value T) {
+	n := l.first
+	for index > 0 {
+		n = n.Next
+		index--
+	}
+	n.Value = value
+}
+
+func (l *SingleLinkedList[T, I]) RemoveFirst() T {
 	tmp := l.first
-	for i := I(0); i < l.length; i++ {
-		slice[i] = tmp.Value
+	l.first = l.first.Next
+	l.length--
+	if l.length == 0 {
+		l.last = nil
+	}
+	return tmp.Value
+}
+func (l *SingleLinkedList[T, I]) RemoveLast() (value T) {
+	value = l.last.Value
+	if l.length == 1 {
+		l.first = nil
+		l.last = nil
+		l.length = 0
+		return
+	}
+
+	tmp := l.first
+	for i := I(2); i < l.length; i++ {
 		tmp = tmp.Next
 	}
+	l.last = tmp
+	return
+}
+
+func (l *SingleLinkedList[T, I]) RemoveAt(index I) T {
+	if index == 0 {
+		return l.RemoveFirst()
+	}
+	if index == l.length-1 {
+		return l.RemoveLast()
+	}
+
+	tmp := l.first
+	for i := I(1); i < index; i++ {
+		tmp = tmp.Next
+	}
+	res := tmp.Next.Value
+	tmp.Next = tmp.Next.Next
+	return res
+}
+
+func (l *SingleLinkedList[T, I]) ForEach(f func(T, I)) {
+	tmp := l.first
+	for i := I(0); i < l.length; i++ {
+		f(tmp.Value, i)
+		tmp = tmp.Next
+	}
+}
+func (it *SingleLinkedList[T, I]) String() string {
+	slice := make([]T, 0)
+	it.ForEach(func(value T, index I) {
+		slice = append(slice, value)
+	})
 	return fmt.Sprint(slice)
 }
 
-//#endregion
-//#endregion
+// #endregion
+// #region Queue
+
+type Queue[ValueType comparable, LengthType Unsigned] struct {
+	l SingleLinkedList[ValueType, LengthType]
+}
+
+func NewQueue[ValueType comparable, LengthType Unsigned]() *Queue[ValueType, LengthType] {
+	return &Queue[ValueType, LengthType]{
+		l: SingleLinkedList[ValueType, LengthType]{
+			first:  nil,
+			last:   nil,
+			length: 0,
+		},
+	}
+}
+func (q *Queue[T, I]) GetLength() I    { return q.l.length }
+func (q *Queue[T, I]) Enqueue(value T) { q.l.InsertLast(value) }
+func (q *Queue[T, I]) Dequeue(T) T     { return q.l.RemoveFirst() }
+func (q *Queue[T, I]) See() T          { return q.l.First() }
+func (q *Queue[T, I]) String() string  { return q.l.String() }
+
+// #endregion
+// #region Stack
+
+type Stack[ValueType comparable, LengthType Unsigned] struct {
+	l SingleLinkedList[ValueType, LengthType]
+}
+
+func NewStack[ValueType comparable, LengthType Unsigned]() *Stack[ValueType, LengthType] {
+	return &Stack[ValueType, LengthType]{
+		l: SingleLinkedList[ValueType, LengthType]{
+			first:  nil,
+			last:   nil,
+			length: 0,
+		},
+	}
+}
+func (s *Stack[T, I]) GetLength() I   { return s.l.length }
+func (s *Stack[T, I]) Push(value T)   { s.l.InsertFirst(value) }
+func (s *Stack[T, I]) Pop(T) T        { return s.l.RemoveFirst() }
+func (s *Stack[T, I]) See() T         { return s.l.First() }
+func (s *Stack[T, I]) String() string { return s.l.String() }
+
+// #endregion
+// #endregion
 
 // #region FUNCTIONS
 func Max[T Ordered](a, b T) T {
@@ -197,10 +333,35 @@ func Min[T Ordered](a, b T) T {
 	}
 	return b
 }
+func SwapAny[T any](a, b *T) {
+	tmp := *a
+	*a = *b
+	*b = tmp
+}
+func SwapInteger[T Integer](a, b *T) {
+	*a ^= *b
+	*b ^= *a
+	*a ^= *b
+}
+
+// At least one != 0
+func GCD[T Unsigned](a, b T) T {
+	if b < a {
+		SwapInteger(&a, &b)
+	}
+	for {
+		if a == 0 {
+			return b
+		}
+		r := (b % a)
+		b = a
+		a = r
+	}
+}
 
 func First[T any](a T, _ any) T { return a }
 
-//#endregion
+// #endregion
 
 // #region IO STUFF
 type IO struct {
@@ -243,4 +404,4 @@ func (io *IO) printLn(x ...any) { fmt.Fprintln(io.w, x...) }
 
 func (io *IO) flush() { io.w.Flush() }
 
-//#endregion
+// #endregion
