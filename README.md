@@ -9,6 +9,8 @@
 
 If you want to solve multiple problems simultanously (like in contests) just copy paste "problem" folder for each problem
 
+![](goji-image.jpg)
+
 ## Assuntions
 1. Every pointer receiver method assume that the pointer is not nil
 2. All assumption (if any) are specified in each function
@@ -27,3 +29,6 @@ https://go101.org/article/type-system-overview.html
 3. Submitting a fix
 4. Proposing new features
 5. Becoming a maintainer
+
+## Future proposals
+- Create a library/module called actually "goji" with all data structures and algorithms but for general use, so well organized in packages
