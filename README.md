@@ -5,7 +5,9 @@
 2. Using remote container extension, select reopen in container
 3. Install all tools suggested by vscode
 4. Leave only the main (and optionally the solve) function related to your platform
-4. Solve! (p.s. Use "log" to while debugging)
+4. Code!
+    - Use io.Scan... and io.Print... (always add a newline at the end of a solve). P.s. If you are using Leetcode ignore this.
+    - Use "log" to print while debugging
 
 If you want to solve multiple problems simultanously (like in contests) just copy paste "problem" folder for each problem
 
@@ -15,10 +17,8 @@ If you want to solve multiple problems simultanously (like in contests) just cop
 1. Every pointer receiver method assume that the pointer is not nil
 2. All assumption (if any) are specified in each function
 
-## Naming conventions:
-1. For any function/method that can be directly be used in competition use uppercase, otherwise use lowercase
-2. For any type/interface use lowercase
-3. Do not use underlying types for the template
+## Naming conventions different from standard:
+1. For any function (not methods)/type/interface that can be directly be used in competition use uppercase, otherwise use lowercase
 
 ## Go docs
 https://go101.org/article/type-system-overview.html

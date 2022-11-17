@@ -2,74 +2,67 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
+	"index/suffixarray"
+	"log"
+	"math"
+	"net"
 	"os"
+	"path"
+	"sort"
+	"strconv"
+	"strings"
+	"time"
 )
 
-// For LeetCode (copy paste only your solve function and all code below it)
-func main() {
-	io := newStdIO()
-	defer io.flush()
-	io.printLn( /* CALL SOLVE FUNCTION HERE */ )
-}
+//// For LeetCode (copy paste only your solve function and all code below it)
+//func main() {
+//	io := newStdIO()
+//	defer io.flush()
+//	io.PrintLn( /* CALL SOLVE FUNCTION HERE */ )
+//}
+//
+//// YOUR SOLVE FUNCTION HERE
+//
+//// For GoogleKickStart
+//func main() {
+//	io := newStdIO()
+//	defer io.flush()
+//	T := io.ScanUInt16()
+//	for t := uint16(1); t <= T; t++ {
+//		io.Print("Case #", t, ": ")
+//		solve(&io)
+//	}
+//}
+//func solve(io *IO) {
+//	// SOLVE HERE
+//}
+//
+//// For Hackerrank
+//func main() {
+//	io := newStdIO()
+//	defer io.flush()
+//	for T := io.ScanUInt16(); T > 0; T-- {
+//		solve(&io)
+//	}
+//}
+//func solve(io *IO) {
+//	// SOLVE HERE
+//}
+//
+//// For Codeforces
+//func main() {
+//	io := newFileIO()
+//	defer io.flush()
+//	for T := io.ScanUInt16(); T > 0; T-- {
+//		solve(&io)
+//	}
+//}
+//func solve(io *IO) string {
+//	// SOLVE HERE
+//}
 
-// YOUR SOLVE FUNCTION HERE
-
-// For GoogleKickStart
-func main() {
-	io := newStdIO()
-	defer io.flush()
-	T := io.ScanUInt16()
-	for t := uint16(1); t <= T; t++ {
-		io.print("Case #", t, ": ", solve(&io))
-	}
-}
-func solve(io *IO) string {
-	// SOLVE HERE
-	return fmt.Sprintln( /* SOLUTIONS HERE */ )
-}
-
-// For Hackerrank
-func main() {
-	io := newStdIO()
-	defer io.flush()
-	for T := io.ScanUInt16(); T > 0; T-- {
-		io.print(solve(&io))
-	}
-}
-func solve(io *IO) string {
-	// SOLVE HERE
-	return fmt.Sprintln( /* SOLUTIONS HERE */ )
-}
-
-// For Codeforces
-func main() {
-	io := newFileIO()
-	defer io.flush()
-	for T := io.ScanUInt16(); T > 0; T-- {
-		io.print(solve(&io))
-	}
-}
-func solve(io *IO) string {
-	// SOLVE HERE
-	return fmt.Sprintln( /* SOLUTIONS HERE */ )
-}
-
-// #region UNDERLYING TYPES
-type i8 int8
-type i16 int16
-type i32 int32
-type i64 int64
-type u8 uint8
-type u16 uint16
-type u32 uint32
-type u64 uint64
-type f32 float32
-type f64 float64
-type c64 complex64
-type c128 complex128
-
-// #endregion
 // #region INTERFACES
 
 // From https://pkg.go.dev/golang.org/x/exp/constraints
@@ -92,6 +85,10 @@ type Ordered interface {
 	Integer | Float | ~string
 }
 
+type Prioritizable[T any] interface {
+	PriorTo(x T) bool // Swapping the "arguments" you get the opposite result
+}
+
 // #endregion
 // #region TYPES WITH METHODS
 // #region SingleLinkedList
@@ -100,14 +97,14 @@ type singleLinkedListNode[T comparable] struct {
 	Next  *singleLinkedListNode[T]
 }
 
-type SingleLinkedList[ValueType comparable, IndexType Unsigned] struct {
-	first  *singleLinkedListNode[ValueType]
-	last   *singleLinkedListNode[ValueType]
+type SingleLinkedList[T comparable, IndexType Unsigned] struct {
+	first  *singleLinkedListNode[T]
+	last   *singleLinkedListNode[T]
 	length IndexType
 }
 
-func NewSingleLinkedList[ValueType comparable, IndexType Unsigned]() *SingleLinkedList[ValueType, IndexType] {
-	return &SingleLinkedList[ValueType, IndexType]{
+func NewSingleLinkedList[T comparable, IndexType Unsigned]() *SingleLinkedList[T, IndexType] {
+	return &SingleLinkedList[T, IndexType]{
 		first:  nil,
 		last:   nil,
 		length: 0,
@@ -276,13 +273,13 @@ func (it *SingleLinkedList[T, I]) String() string {
 // #endregion
 // #region Queue
 
-type Queue[ValueType comparable, LengthType Unsigned] struct {
-	l SingleLinkedList[ValueType, LengthType]
+type Queue[T comparable, I Unsigned] struct {
+	l SingleLinkedList[T, I]
 }
 
-func NewQueue[ValueType comparable, LengthType Unsigned]() *Queue[ValueType, LengthType] {
-	return &Queue[ValueType, LengthType]{
-		l: SingleLinkedList[ValueType, LengthType]{
+func NewQueue[T comparable, I Unsigned]() *Queue[T, I] {
+	return &Queue[T, I]{
+		l: SingleLinkedList[T, I]{
 			first:  nil,
 			last:   nil,
 			length: 0,
@@ -298,13 +295,13 @@ func (q *Queue[T, I]) String() string  { return q.l.String() }
 // #endregion
 // #region Stack
 
-type Stack[ValueType comparable, LengthType Unsigned] struct {
-	l SingleLinkedList[ValueType, LengthType]
+type Stack[T comparable, I Unsigned] struct {
+	l SingleLinkedList[T, I]
 }
 
-func NewStack[ValueType comparable, LengthType Unsigned]() *Stack[ValueType, LengthType] {
-	return &Stack[ValueType, LengthType]{
-		l: SingleLinkedList[ValueType, LengthType]{
+func NewStack[T comparable, I Unsigned]() *Stack[T, I] {
+	return &Stack[T, I]{
+		l: SingleLinkedList[T, I]{
 			first:  nil,
 			last:   nil,
 			length: 0,
@@ -318,6 +315,71 @@ func (s *Stack[T, I]) See() T         { return s.l.First() }
 func (s *Stack[T, I]) String() string { return s.l.String() }
 
 // #endregion
+// #region Heap
+type BinaryHeap[T Prioritizable[T], I Signed] struct {
+	s []T
+}
+
+func NewBinaryHeap[T Prioritizable[T], I Signed](s []T) (h *BinaryHeap[T, I]) {
+	h = &BinaryHeap[T, I]{
+		s: s,
+	}
+
+	for i := (h.Len() - 2) / 2; i >= 0; i-- {
+		h.heapifyDown(i)
+	}
+	return
+}
+func (h *BinaryHeap[T, I]) Len() I {
+	return I(len(h.s))
+}
+func (h *BinaryHeap[T, I]) Push(value T) {
+	h.s = append(h.s, value)
+	h.heapifyUp(h.Len() - 1)
+}
+func (h *BinaryHeap[T, I]) Pop() (res T) {
+	res = h.s[0]
+	h.s[0] = h.s[h.Len()-1]
+	h.s = h.s[:h.Len()-1]
+	h.heapifyDown(0)
+	return
+}
+func (h *BinaryHeap[T, I]) heapifyDown(index I) bool {
+	origin := index
+	for {
+		j := index*2 + 2
+		if j < h.Len() {
+			if h.s[j-1].PriorTo(h.s[j]) {
+				j--
+			}
+		} else {
+			j--
+			if j >= h.Len() {
+				break
+			}
+		}
+		if h.s[j].PriorTo(h.s[index]) {
+			h.s[j], h.s[index] = h.s[index], h.s[j]
+			index = j
+		} else {
+			break
+		}
+	}
+	return origin != index
+}
+func (h *BinaryHeap[T, I]) heapifyUp(index I) {
+	for {
+		parent := (index - 1) / 2
+		if parent == index || h.s[parent].PriorTo(h.s[index]) {
+			break
+		}
+		h.s[index], h.s[parent] = h.s[parent], h.s[index]
+		index = parent
+	}
+}
+
+// #endregion
+
 // #endregion
 
 // #region FUNCTIONS
@@ -334,24 +396,19 @@ func Min[T Ordered](a, b T) T {
 	return b
 }
 func Abs[T Integer | Float](a T) T {
-	if a < 0 { return -a }
+	if a < 0 {
+		return -a
+	}
 	return a
 }
-func SwapAny[T any](a, b *T) {
-	tmp := *a
-	*a = *b
-	*b = tmp
-}
-func SwapInteger[T Integer](a, b *T) {
-	*a ^= *b
-	*b ^= *a
-	*a ^= *b
+func Swap[T any](a, b *T) {
+	*a, *b = *b, *a
 }
 
 // At least one != 0
 func GCD[T Unsigned](a, b T) T {
 	if b < a {
-		SwapInteger(&a, &b)
+		Swap(&a, &b)
 	}
 	for {
 		if a == 0 {
@@ -365,7 +422,7 @@ func GCD[T Unsigned](a, b T) T {
 
 // At least one != 0
 func LCM[T Unsigned](a, b T) T {
-	return (a*b)/GCD(a, b)
+	return (a * b) / GCD(a, b)
 }
 
 func First[T any](a T, _ any) T { return a }
@@ -408,9 +465,28 @@ func (io *IO) ScanFloat64() (x float64) { fmt.Fscan(io.r, &x); return }
 
 func (io *IO) ScanString() (x string) { fmt.Fscan(io.r, &x); return }
 
-func (io *IO) print(x ...any)   { fmt.Fprint(io.w, x...) }
-func (io *IO) printLn(x ...any) { fmt.Fprintln(io.w, x...) }
+func (io *IO) Print(x ...any)   { fmt.Fprint(io.w, x...) }
+func (io *IO) PrintLn(x ...any) { fmt.Fprintln(io.w, x...) }
 
-func (io *IO) flush() { io.w.Flush() }
+func (io *IO) Flush() { io.w.Flush() }
+
+// #endregion
+
+// #region KEEP IMPORTS
+func D() {
+	_ = bufio.Reader{}
+	_ = bytes.Buffer{}
+	_ = suffixarray.Index{}
+	_ = log.Default()
+	_ = math.Abs(0)
+	_ = net.Dialer{}
+	_ = path.ErrBadPattern
+	_ = sort.Float64sAreSorted(nil)
+	_ = strconv.ErrRange
+	_ = strings.Builder{}
+	_ = time.ANSIC
+	_ = newStdIO()
+	_ = newFileIO()
+}
 
 // #endregion
