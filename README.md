@@ -16,6 +16,7 @@ If you want to solve multiple problems simultanously (like in contests) just cop
 ## Assuntions
 1. Every pointer receiver method assume that the pointer is not nil
 2. All assumption (if any) are specified in each function
+3. Numbers ovewflow errors are not covered
 
 ## Naming conventions different from standard:
 1. For any function (not methods)/type/interface that can be directly be used in competition use uppercase, otherwise use lowercase

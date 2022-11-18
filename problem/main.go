@@ -86,7 +86,7 @@ type Ordered interface {
 }
 
 type Prioritizable[T any] interface {
-	PriorTo(x T) bool // Swapping the "arguments" you get the opposite result
+	PriorTo(x T) bool // If you take this as a relation: if (a,b) in R => (b,a) not in R
 }
 
 // #endregion
@@ -353,10 +353,10 @@ func (h *BinaryHeap[T, I]) heapifyDown(index I) bool {
 				j--
 			}
 		} else {
-			j--
-			if j >= h.Len() {
-				break
+			if j <= h.Len() && !h.s[j].PriorTo(h.s[index]){
+				h.s[j], h.s[index] = h.s[index], h.s[j]
 			}
+			break
 		}
 		if h.s[j].PriorTo(h.s[index]) {
 			h.s[j], h.s[index] = h.s[index], h.s[j]
