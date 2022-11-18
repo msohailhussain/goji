@@ -110,7 +110,7 @@ func NewSingleLinkedList[T comparable, IndexType Unsigned]() *SingleLinkedList[T
 		length: 0,
 	}
 }
-func (l *SingleLinkedList[T, I]) GetLength() I { return l.length }
+func (l *SingleLinkedList[T, I]) Len() I { return l.length }
 
 // length > 0
 func (l *SingleLinkedList[T, I]) First() T { return l.first.Value }
@@ -255,19 +255,17 @@ func (l *SingleLinkedList[T, I]) RemoveAt(index I) T {
 	return res
 }
 
-func (l *SingleLinkedList[T, I]) ForEach(f func(T, I)) {
+func (l *SingleLinkedList[T, I]) ToSlice() (res []T) {
+	res = make([]T, 0, l.length)
 	tmp := l.first
 	for i := I(0); i < l.length; i++ {
-		f(tmp.Value, i)
+		res = append(res, tmp.Value)
 		tmp = tmp.Next
 	}
+	return
 }
 func (it *SingleLinkedList[T, I]) String() string {
-	slice := make([]T, 0)
-	it.ForEach(func(value T, index I) {
-		slice = append(slice, value)
-	})
-	return fmt.Sprint(slice)
+	return "Qua:: " + fmt.Sprint(it.ToSlice())
 }
 
 // #endregion
@@ -286,10 +284,10 @@ func NewQueue[T comparable, I Unsigned]() *Queue[T, I] {
 		},
 	}
 }
-func (q *Queue[T, I]) GetLength() I    { return q.l.length }
+func (q *Queue[T, I]) Len() I          { return q.l.length }
 func (q *Queue[T, I]) Enqueue(value T) { q.l.InsertLast(value) }
 func (q *Queue[T, I]) Dequeue(T) T     { return q.l.RemoveFirst() }
-func (q *Queue[T, I]) See() T          { return q.l.First() }
+func (q *Queue[T, I]) Preview() T      { return q.l.First() }
 func (q *Queue[T, I]) String() string  { return q.l.String() }
 
 // #endregion
@@ -308,10 +306,10 @@ func NewStack[T comparable, I Unsigned]() *Stack[T, I] {
 		},
 	}
 }
-func (s *Stack[T, I]) GetLength() I   { return s.l.length }
+func (s *Stack[T, I]) Len() I         { return s.l.length }
 func (s *Stack[T, I]) Push(value T)   { s.l.InsertFirst(value) }
 func (s *Stack[T, I]) Pop(T) T        { return s.l.RemoveFirst() }
-func (s *Stack[T, I]) See() T         { return s.l.First() }
+func (s *Stack[T, I]) Preview() T     { return s.l.First() }
 func (s *Stack[T, I]) String() string { return s.l.String() }
 
 // #endregion
@@ -344,6 +342,7 @@ func (h *BinaryHeap[T, I]) Pop() (res T) {
 	h.heapifyDown(0)
 	return
 }
+
 func (h *BinaryHeap[T, I]) heapifyDown(index I) bool {
 	origin := index
 	for {
@@ -353,7 +352,7 @@ func (h *BinaryHeap[T, I]) heapifyDown(index I) bool {
 				j--
 			}
 		} else {
-			if j <= h.Len() && !h.s[j].PriorTo(h.s[index]){
+			if j <= h.Len() && !h.s[j].PriorTo(h.s[index]) {
 				h.s[j], h.s[index] = h.s[index], h.s[j]
 			}
 			break
