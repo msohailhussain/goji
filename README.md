@@ -20,9 +20,11 @@ If you want to solve multiple problems simultanously (like in contests) just cop
 
 ## Naming conventions different from standard:
 1. For any function (not methods)/type/interface that can be directly be used in competition use uppercase, otherwise use lowercase
+2. Every field in a struct is private, every private method is lowercase, and every public method is uppercase
 
 ## Go docs
-https://go101.org/article/type-system-overview.html
+- https://go101.org/article/type-system-overview.html
+- https://the-algorithms.com/language/go
 
 ## How to contribute
 1. Reporting a bug
@@ -33,3 +35,6 @@ https://go101.org/article/type-system-overview.html
 
 ## Future proposals
 - Create a library/module called actually "goji" with all data structures and algorithms but for general use, so well organized in packages
+
+## Some source code
+- https://github.com/shivamMg/ppds/tree/master/tree

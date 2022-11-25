@@ -14,54 +14,62 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 )
 
-//// For LeetCode (copy paste only your solve function and all code below it)
-//func main() {
-//	io := newStdIO()
-//	defer io.flush()
-//	io.PrintLn( /* CALL SOLVE FUNCTION HERE */ )
-//}
+// // For LeetCode (copy paste only your solve function and all code below it)
 //
-//// YOUR SOLVE FUNCTION HERE
-//
-//// For GoogleKickStart
-//func main() {
-//	io := newStdIO()
-//	defer io.flush()
-//	T := io.ScanUInt16()
-//	for t := uint16(1); t <= T; t++ {
-//		io.Print("Case #", t, ": ")
-//		solve(&io)
+//	func main() {
+//		io := newStdIO()
+//		defer io.Flush()
+//		io.PrintLn( /* CALL SOLVE FUNCTION HERE */ )
 //	}
-//}
-//func solve(io *IO) {
-//	// SOLVE HERE
-//}
 //
-//// For Hackerrank
-//func main() {
-//	io := newStdIO()
-//	defer io.flush()
-//	for T := io.ScanUInt16(); T > 0; T-- {
-//		solve(&io)
-//	}
-//}
-//func solve(io *IO) {
-//	// SOLVE HERE
-//}
+// // YOUR SOLVE FUNCTION HERE
 //
-//// For Codeforces
-//func main() {
-//	io := newFileIO()
-//	defer io.flush()
-//	for T := io.ScanUInt16(); T > 0; T-- {
-//		solve(&io)
+// // For GoogleKickStart
+//
+//	func main() {
+//		io := newStdIO()
+//		defer io.Flush()
+//		T := io.ScanUInt16()
+//		for t := uint16(1); t <= T; t++ {
+//			io.Print("Case #", t, ": ")
+//			solve(&io)
+//		}
 //	}
-//}
-//func solve(io *IO) string {
-//	// SOLVE HERE
-//}
+//
+//	func solve(io *IO) {
+//		// SOLVE HERE
+//	}
+//
+// // For Hackerrank
+//
+//	func main() {
+//		io := newStdIO()
+//		defer io.Flush()
+//		for T := io.ScanUInt16(); T > 0; T-- {
+//			solve(&io)
+//		}
+//	}
+//
+//	func solve(io *IO) {
+//		// SOLVE HERE
+//	}
+//
+// // For Codeforces
+//
+//	func main() {
+//		io := newFileIO()
+//		defer io.Flush()
+//		for T := io.ScanUInt16(); T > 0; T-- {
+//			solve(&io)
+//		}
+//	}
+//
+//	func solve(io *IO) string {
+//		// SOLVE HERE
+//	}
 
 // #region INTERFACES
 
@@ -112,10 +120,8 @@ func NewSingleLinkedList[T comparable, IndexType Unsigned]() *SingleLinkedList[T
 }
 func (l *SingleLinkedList[T, I]) Len() I { return l.length }
 
-// length > 0
 func (l *SingleLinkedList[T, I]) First() T { return l.first.Value }
 
-// length > 0
 func (l *SingleLinkedList[T, I]) Last() T { return l.last.Value }
 
 func (l *SingleLinkedList[T, I]) InsertFirst(value T) {
@@ -238,6 +244,7 @@ func (l *SingleLinkedList[T, I]) RemoveLast() (value T) {
 	return
 }
 
+// index < length
 func (l *SingleLinkedList[T, I]) RemoveAt(index I) T {
 	if index == 0 {
 		return l.RemoveFirst()
@@ -264,7 +271,7 @@ func (l *SingleLinkedList[T, I]) ToSlice() (res []T) {
 	}
 	return
 }
-func (it *SingleLinkedList[T, I]) String() string {
+func (it SingleLinkedList[T, I]) String() string {
 	return "Qua:: " + fmt.Sprint(it.ToSlice())
 }
 
@@ -286,9 +293,9 @@ func NewQueue[T comparable, I Unsigned]() *Queue[T, I] {
 }
 func (q *Queue[T, I]) Len() I          { return q.l.length }
 func (q *Queue[T, I]) Enqueue(value T) { q.l.InsertLast(value) }
-func (q *Queue[T, I]) Dequeue(T) T     { return q.l.RemoveFirst() }
+func (q *Queue[T, I]) Dequeue() T      { return q.l.RemoveFirst() }
 func (q *Queue[T, I]) Preview() T      { return q.l.First() }
-func (q *Queue[T, I]) String() string  { return q.l.String() }
+func (q Queue[T, I]) String() string   { return q.l.String() }
 
 // #endregion
 // #region Stack
@@ -306,27 +313,30 @@ func NewStack[T comparable, I Unsigned]() *Stack[T, I] {
 		},
 	}
 }
-func (s *Stack[T, I]) Len() I         { return s.l.length }
-func (s *Stack[T, I]) Push(value T)   { s.l.InsertFirst(value) }
-func (s *Stack[T, I]) Pop(T) T        { return s.l.RemoveFirst() }
-func (s *Stack[T, I]) Preview() T     { return s.l.First() }
-func (s *Stack[T, I]) String() string { return s.l.String() }
+func (s *Stack[T, I]) Len() I        { return s.l.length }
+func (s *Stack[T, I]) Push(value T)  { s.l.InsertFirst(value) }
+func (s *Stack[T, I]) Pop() T        { return s.l.RemoveFirst() }
+func (s *Stack[T, I]) Preview() T    { return s.l.First() }
+func (s Stack[T, I]) String() string { return s.l.String() }
 
 // #endregion
+
 // #region Heap
 type BinaryHeap[T Prioritizable[T], I Signed] struct {
 	s []T
 }
 
-func NewBinaryHeap[T Prioritizable[T], I Signed](s []T) (h *BinaryHeap[T, I]) {
+func NewBinaryHeapFromSlice[T Prioritizable[T], I Signed](s []T) (h *BinaryHeap[T, I]) {
 	h = &BinaryHeap[T, I]{
 		s: s,
 	}
-
 	for i := (h.Len() - 2) / 2; i >= 0; i-- {
 		h.heapifyDown(i)
 	}
 	return
+}
+func NewBinaryHeap[T Prioritizable[T], I Signed]() *BinaryHeap[T, I] {
+	return &BinaryHeap[T, I]{s: make([]T, 0)}
 }
 func (h *BinaryHeap[T, I]) Len() I {
 	return I(len(h.s))
@@ -376,11 +386,236 @@ func (h *BinaryHeap[T, I]) heapifyUp(index I) {
 		index = parent
 	}
 }
+func (h BinaryHeap[T, I]) String() string {
+	return "" // #TODO
+}
 
 // #endregion
 
-// #endregion
+// #region Set
+type Set[T comparable] struct {
+	l SingleLinkedList[T, uint64]
+}
 
+func NewSet[T comparable]() *Set[T] {
+	return &Set[T]{l: *NewSingleLinkedList[T, uint64]()}
+}
+func (s *Set[T]) Add(element T) (added bool) {
+	if !s.l.Contains(element) {
+		s.l.InsertLast(element)
+		return true
+	} else {
+		return false
+	}
+}
+func (s *Set[T]) ToSlice() (res []T) {
+	return s.l.ToSlice()
+}
+func (s *Set[T]) String() (res []T) {
+	return s.l.ToSlice()
+}
+
+// #endregion
+// #region TreeNode
+type TreeNode[T any] struct {
+	Value    T
+	Children []*TreeNode[T]
+}
+
+func (root TreeNode[T]) String() string {
+	const (
+		BoxVer       = "│"
+		BoxHor       = "─"
+		BoxVerRight  = "├"
+		BoxDownLeft  = "┐"
+		BoxDownRight = "┌"
+		BoxDownHor   = "┬"
+		BoxUpRight   = "└"
+		Gutter       = 2
+	)
+	parents := map[*TreeNode[T]]*TreeNode[T]{}
+	var setParents func(parents map[*TreeNode[T]]*TreeNode[T], root *TreeNode[T])
+	setParents = func(parents map[*TreeNode[T]]*TreeNode[T], root *TreeNode[T]) {
+		for _, c := range root.Children {
+			parents[c] = root
+			setParents(parents, c)
+		}
+	}
+	setParents(parents, &root)
+
+	var lines func(root *TreeNode[T]) (s []string)
+
+	lines = func(root *TreeNode[T]) (s []string) {
+		data := fmt.Sprintf("%s %v ", BoxHor, root.Value)
+		l := len(root.Children)
+		if l == 0 {
+			s = append(s, data)
+			return
+		}
+
+		w := utf8.RuneCountInString(data) // remove import unidcode/utf8
+		for i, c := range root.Children {
+			for j, line := range lines(c) {
+				if i == 0 && j == 0 {
+					if l == 1 {
+						s = append(s, data+BoxHor+line)
+					} else {
+						s = append(s, data+BoxDownHor+line)
+					}
+					continue
+				}
+
+				var box string
+				if i == l-1 && j == 0 {
+					box = BoxUpRight
+				} else if i == l-1 {
+					box = " "
+				} else if j == 0 {
+					box = BoxVerRight
+				} else {
+					box = BoxVer
+				}
+				s = append(s, strings.Repeat(" ", w)+box+line)
+			}
+		}
+		return
+	}
+
+	var lines2 func(root *TreeNode[T]) (s []string)
+	lines2 = func(root *TreeNode[T]) (s []string) {
+		s = append(s, fmt.Sprintf("%v", root.Value))
+		l := len(root.Children)
+		if l == 0 {
+			return
+		}
+
+		for i, c := range root.Children {
+			for j, line := range lines2(c) {
+				// first line of the last child
+				if i == l-1 && j == 0 {
+					s = append(s, BoxUpRight+BoxHor+" "+line)
+				} else if j == 0 {
+					s = append(s, BoxVerRight+BoxHor+" "+line)
+				} else if i == l-1 {
+					s = append(s, "   "+line)
+				} else {
+					s = append(s, BoxVer+"  "+line)
+				}
+			}
+		}
+		return
+	}
+	safeData := func(n *TreeNode[T]) string {
+		data := fmt.Sprintf("%v", n.Value)
+		if data == "" {
+			return " "
+		}
+		return data
+	}
+	var width func(widths map[*TreeNode[T]]int, n *TreeNode[T]) int
+	width = func(widths map[*TreeNode[T]]int, n *TreeNode[T]) int {
+		if w, ok := widths[n]; ok {
+			return w
+		}
+
+		w := utf8.RuneCountInString(safeData(n)) + Gutter
+		widths[n] = w
+		if len(n.Children) == 0 {
+			return w
+		}
+
+		sum := 0
+		for _, c := range n.Children {
+			sum += width(widths, c)
+		}
+		if sum > w {
+			widths[n] = sum
+			return sum
+		}
+		return w
+	}
+
+	var setPaddings func(paddings map[*TreeNode[T]]int, widths map[*TreeNode[T]]int, pad int, root *TreeNode[T])
+	setPaddings = func(paddings map[*TreeNode[T]]int, widths map[*TreeNode[T]]int, pad int, root *TreeNode[T]) {
+		for _, c := range root.Children {
+			paddings[c] = pad
+			setPaddings(paddings, widths, pad, c)
+			pad += width(widths, c)
+		}
+	}
+
+	isLeftMostChild := func(n *TreeNode[T]) bool {
+		p, ok := parents[n]
+		if !ok {
+			// root
+			return true
+		}
+		return p.Children[0] == n
+	}
+
+	paddings := map[*TreeNode[T]]int{}
+
+	setPaddings(paddings, map[*TreeNode[T]]int{}, 0, &root)
+
+	q := NewQueue[*TreeNode[T], uint64]()
+	q.Enqueue(&root)
+	linesss := []string{}
+	for q.Len() > 0 {
+		branches, nodes := "", ""
+		covered := 0
+		qLen := q.Len()
+		for i := uint64(0); i < qLen; i++ {
+			n := q.Dequeue()
+			for _, c := range n.Children {
+				q.Enqueue(c)
+			}
+
+			spaces := paddings[n] - covered
+			data := safeData(n)
+			nodes += strings.Repeat(" ", spaces) + data
+
+			w := utf8.RuneCountInString(data)
+			covered += spaces + w
+			var preview *TreeNode[T] = nil
+			if q.Len() > 0 {
+				preview = q.Preview()
+			}
+			current, next := isLeftMostChild(n), isLeftMostChild(preview)
+			if current {
+				branches += strings.Repeat(" ", spaces)
+			} else {
+				branches += strings.Repeat(BoxHor, spaces)
+			}
+
+			if current && next {
+				branches += BoxVer
+			} else if current {
+				branches += BoxVerRight
+			} else if next {
+				branches += BoxDownLeft
+			} else {
+				branches += BoxDownHor
+			}
+
+			if next {
+				branches += strings.Repeat(" ", w-1)
+			} else {
+				branches += strings.Repeat(BoxHor, w-1)
+			}
+		}
+		linesss = append(linesss, branches, nodes)
+	}
+
+	s := ""
+	for _, line := range linesss[1:] {
+		s += strings.TrimRight(line, " ") + "\n"
+
+	}
+	return s
+}
+
+// #endregion
+// #endregion
 // #region FUNCTIONS
 func Max[T Ordered](a, b T) T {
 	if a >= b {
