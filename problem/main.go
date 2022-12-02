@@ -587,7 +587,7 @@ $\forall n\in \N > 0, E_1,..., E_n\in E \\ query(E_1,...,E_{new},..., E_n)=updat
 */
 type SqrtDecompositionSimple[E any, Q any] struct {
 	querySingleElement func(element E) Q
-	unionQ             func(q1 Q, q2 Q) Q
+	mergeQ             func(q1 Q, q2 Q) Q
 	updateQ            func(oldQ Q, oldE E, newE E) (newQ Q)
 
 	elements  []E
@@ -599,12 +599,12 @@ type SqrtDecompositionSimple[E any, Q any] struct {
 func NewSqrtDecompositionSimple[E any, Q any](
 	elements []E,
 	querySingleElement func(element E) Q,
-	unionQ func(q1 Q, q2 Q) Q,
+	mergeQ func(q1 Q, q2 Q) Q,
 	updateQ func(oldQ Q, oldE E, newE E) (newQ Q),
 ) *SqrtDecompositionSimple[E, Q] {
 	sqrtDec := &SqrtDecompositionSimple[E, Q]{
 		querySingleElement: querySingleElement,
-		unionQ:             unionQ,
+		mergeQ:             mergeQ,
 		updateQ:            updateQ,
 		elements:           elements,
 	}
@@ -616,7 +616,7 @@ func NewSqrtDecompositionSimple[E any, Q any](
 		if i%blockSize == 0 {
 			sqrtDec.blocks[i/blockSize] = sqrtDec.querySingleElement(elements[i])
 		} else {
-			sqrtDec.blocks[i/blockSize] = sqrtDec.unionQ(sqrtDec.blocks[i/blockSize], sqrtDec.querySingleElement(elements[i]))
+			sqrtDec.blocks[i/blockSize] = sqrtDec.mergeQ(sqrtDec.blocks[i/blockSize], sqrtDec.querySingleElement(elements[i]))
 		}
 	}
 	sqrtDec.blockSize = blockSize
@@ -630,26 +630,26 @@ func (s *SqrtDecompositionSimple[E, Q]) Query(start uint64, end uint64) Q {
 	if firstIndexNextBlock > end { // if in same block
 		start++
 		for start < end {
-			q = s.unionQ(q, s.querySingleElement(s.elements[start]))
+			q = s.mergeQ(q, s.querySingleElement(s.elements[start]))
 			start++
 		}
 	} else {
 		// left side
 		start++
 		for start < firstIndexNextBlock {
-			q = s.unionQ(q, s.querySingleElement(s.elements[start]))
+			q = s.mergeQ(q, s.querySingleElement(s.elements[start]))
 			start++
 		}
 
 		//middle part
 		endBlock := end / s.blockSize
 		for i := firstIndexNextBlock / s.blockSize; i < endBlock; i++ {
-			q = s.unionQ(q, s.blocks[i])
+			q = s.mergeQ(q, s.blocks[i])
 		}
 
 		// right part
 		for i := endBlock * s.blockSize; i < end; i++ {
-			q = s.unionQ(q, s.querySingleElement(s.elements[i]))
+			q = s.mergeQ(q, s.querySingleElement(s.elements[i]))
 		}
 	}
 	return q
@@ -708,6 +708,31 @@ func LCM[T Unsigned](a, b T) T {
 }
 
 func First[T any](a T, _ any) T { return a }
+
+// Use this if in SqrtDecompsitionSimple, the mergeQ function is hard, but an expandQ function is easy
+func MoSAlgorithm[E any, Q any](
+	querySingleElement func(element E) Q,
+	expandQ func(*Q, E),
+	clone func(Q) Q,
+	elements []E,
+	queries [][2]uint64,
+) (res []Q) {
+	res = make([]Q, len(queries))
+	// #TODO
+
+}
+
+func SelectionSort[T Prioritizable[T]](slice []T) {
+	for i := 0; i < len(slice)-1; i++ {
+		min := i
+		for j := i + 1; j < len(slice); i++ {
+			if slice[j].PriorTo(slice[min]) {
+				min = j
+			}
+		}
+		slice[i], slice[min] = slice[min], slice[i]
+	}
+}
 
 // #endregion
 
