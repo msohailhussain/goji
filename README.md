@@ -1,5 +1,5 @@
 # Competitive programming golang environment with template
-
+![](goji-image.jpg)
 ## Usage
 1. Open The folder in vscode
 2. Using remote container extension, select reopen in container
@@ -10,8 +10,6 @@
     - Use "log" to print while debugging
 
 If you want to solve multiple problems simultanously (like in contests) just copy paste "problem" folder for each problem
-
-![](goji-image.jpg)
 
 ## Assuntions
 1. Every pointer receiver method assume that the pointer is not nil
