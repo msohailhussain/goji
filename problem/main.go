@@ -17,59 +17,11 @@ import (
 	"unicode/utf8"
 )
 
-// // For LeetCode (copy paste only your solve function and all code below it)
-//
-//	func main() {
-//		io := newStdIO()
-//		defer io.Flush()
-//		io.PrintLn( /* CALL SOLVE FUNCTION HERE */ )
-//	}
-//
-// // YOUR SOLVE FUNCTION HERE
-//
-// // For GoogleKickStart
-//
-//	func main() {
-//		io := newStdIO()
-//		defer io.Flush()
-//		T := io.ScanUInt16()
-//		for t := uint16(1); t <= T; t++ {
-//			io.Print("Case #", t, ": ")
-//			solve(&io)
-//		}
-//	}
-//
-//	func solve(io *IO) {
-//		// SOLVE HERE
-//	}
-//
-// // For Hackerrank
-//
-//	func main() {
-//		io := newStdIO()
-//		defer io.Flush()
-//		for T := io.ScanUInt16(); T > 0; T-- {
-//			solve(&io)
-//		}
-//	}
-//
-//	func solve(io *IO) {
-//		// SOLVE HERE
-//	}
-//
-// // For Codeforces
-//
-//	func main() {
-//		io := newFileIO()
-//		defer io.Flush()
-//		for T := io.ScanUInt16(); T > 0; T-- {
-//			solve(&io)
-//		}
-//	}
-//
-//	func solve(io *IO) string {
-//		// SOLVE HERE
-//	}
+func main() {
+	io := newIO()
+	defer io.Flush()
+	solve(&io)
+}
 
 // #region INTERFACES
 
@@ -672,7 +624,7 @@ type IO struct {
 	w *bufio.Writer
 }
 
-func newStdIO() IO {
+func newIO() IO {
 	return IO{
 		r: bufio.NewReader(os.Stdin),
 		w: bufio.NewWriter(os.Stdout),
@@ -680,11 +632,8 @@ func newStdIO() IO {
 }
 
 // Is assumed that input.txt file exists
-func newFileIO() IO {
-	return IO{
-		r: bufio.NewReader(First(os.Open("input.txt"))),
-		w: bufio.NewWriter(First(os.OpenFile("output.txt", os.O_CREATE|os.O_RDWR|os.O_TRUNC, os.ModePerm))),
-	}
+func (io *IO) SetFileInput() {
+	io.r = bufio.NewReader(First(os.Open("input.txt")))
 }
 
 func (io *IO) ScanInt8() (x int8)   { fmt.Fscan(io.r, &x); return }
@@ -710,7 +659,7 @@ func (io *IO) Flush() { io.w.Flush() }
 // #endregion
 
 // #region KEEP IMPORTS
-func D() {
+func _() {
 	_ = bufio.Reader{}
 	_ = bytes.Buffer{}
 	_ = suffixarray.Index{}
@@ -722,8 +671,17 @@ func D() {
 	_ = strconv.ErrRange
 	_ = strings.Builder{}
 	_ = time.ANSIC
-	_ = newStdIO()
-	_ = newFileIO()
 }
 
 // #endregion
+
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+
+func solve(io *IO) {
+	// io.SetFileInput() // Uncomment this while only when debugging
+
+	for T := io.ScanUInt16(); T > 0; T-- {
+		// SOLVE HERE
+	}
+}
