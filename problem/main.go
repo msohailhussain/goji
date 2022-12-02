@@ -362,10 +362,10 @@ func (h *BinaryHeap[T, I]) heapifyDown(index I) bool {
 				j--
 			}
 		} else {
-			if j <= h.Len() && !h.s[j].PriorTo(h.s[index]) {
-				h.s[j], h.s[index] = h.s[index], h.s[j]
+			j--
+			if j >= h.Len() {
+				break
 			}
-			break
 		}
 		if h.s[j].PriorTo(h.s[index]) {
 			h.s[j], h.s[index] = h.s[index], h.s[j]
@@ -385,6 +385,9 @@ func (h *BinaryHeap[T, I]) heapifyUp(index I) {
 		h.s[index], h.s[parent] = h.s[parent], h.s[index]
 		index = parent
 	}
+}
+func (h *BinaryHeap[T, I]) Preview() T {
+	return h.s[0]
 }
 func (h BinaryHeap[T, I]) String() string {
 	return "" // #TODO
