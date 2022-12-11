@@ -45,8 +45,9 @@ type Ordered interface {
 	Integer | Float | ~string
 }
 
-type Prioritizable[T any] interface {
-	PriorTo(x T) bool // If you take this as a relation: if (a,b) in R => (b,a) not in R
+type Iterator[T any] interface {
+	HasNext() bool
+	Next() T
 }
 
 // #endregion
@@ -55,6 +56,23 @@ type Prioritizable[T any] interface {
 type singleLinkedListNode[T comparable] struct {
 	Value T
 	Next  *singleLinkedListNode[T]
+}
+type singleLinkedListIterator[T comparable] struct {
+	current *singleLinkedListNode[T]
+}
+
+func newSingleLinkedListIterator[T comparable](current *singleLinkedListNode[T]) Iterator[T] {
+	return &singleLinkedListIterator[T]{
+		current: current,
+	}
+}
+func (it *singleLinkedListIterator[T]) HasNext() bool {
+	return it.current != nil
+}
+func (it *singleLinkedListIterator[T]) Next() T {
+	tmp := it.current.Value
+	it.current = it.current.Next
+	return tmp
 }
 
 type SingleLinkedList[T comparable, IndexType Unsigned] struct {
@@ -174,7 +192,7 @@ func (l *SingleLinkedList[T, I]) RemoveFirst() T {
 	tmp := l.first
 	l.first = l.first.Next
 	l.length--
-	if l.length == 0 {
+	if l.first == nil {
 		l.last = nil
 	}
 	return tmp.Value
@@ -223,8 +241,12 @@ func (l *SingleLinkedList[T, I]) ToSlice() (res []T) {
 	}
 	return
 }
+
+func (l *SingleLinkedList[T, I]) GetIterator() Iterator[T] {
+	return newSingleLinkedListIterator(l.first)
+}
 func (it SingleLinkedList[T, I]) String() string {
-	return "Qua:: " + fmt.Sprint(it.ToSlice())
+	return fmt.Sprint(it.ToSlice())
 }
 
 // #endregion
@@ -274,21 +296,28 @@ func (s Stack[T, I]) String() string { return s.l.String() }
 // #endregion
 
 // #region Heap
-type BinaryHeap[T Prioritizable[T], I Signed] struct {
+type BinaryHeap[T any, I Unsigned] struct {
 	s []T
+	prior func(T, T) bool 
 }
 
-func NewBinaryHeapFromSlice[T Prioritizable[T], I Signed](s []T) (h *BinaryHeap[T, I]) {
+// Note for function Prior: It's a strict order relation
+func NewBinaryHeapFromSlice[T any, I Unsigned](
+	s []T,
+	Prior func(T, T) bool) (h *BinaryHeap[T, I]) {
 	h = &BinaryHeap[T, I]{
 		s: s,
+		prior: Prior,
 	}
-	for i := (h.Len() - 2) / 2; i >= 0; i-- {
-		h.heapifyDown(i)
+	if h.Len() > 1 {
+		for i := (h.Len() - 2) / 2; i >= 0; i-- {
+			h.heapifyDown(i)
+		}
 	}
 	return
 }
-func NewBinaryHeap[T Prioritizable[T], I Signed]() *BinaryHeap[T, I] {
-	return &BinaryHeap[T, I]{s: make([]T, 0)}
+func NewBinaryHeap[T any, I Unsigned](Prior func(T, T) bool) *BinaryHeap[T, I] {
+	return &BinaryHeap[T, I]{s: make([]T, 0), prior: Prior}
 }
 func (h *BinaryHeap[T, I]) Len() I {
 	return I(len(h.s))
@@ -310,7 +339,7 @@ func (h *BinaryHeap[T, I]) heapifyDown(index I) bool {
 	for {
 		j := index*2 + 2
 		if j < h.Len() {
-			if h.s[j-1].PriorTo(h.s[j]) {
+			if h.prior(h.s[j-1], h.s[j]) {
 				j--
 			}
 		} else {
@@ -319,7 +348,7 @@ func (h *BinaryHeap[T, I]) heapifyDown(index I) bool {
 				break
 			}
 		}
-		if h.s[j].PriorTo(h.s[index]) {
+		if h.prior(h.s[j], h.s[index]) {
 			h.s[j], h.s[index] = h.s[index], h.s[j]
 			index = j
 		} else {
@@ -330,8 +359,11 @@ func (h *BinaryHeap[T, I]) heapifyDown(index I) bool {
 }
 func (h *BinaryHeap[T, I]) heapifyUp(index I) {
 	for {
+		if index == 0 {
+			break
+		}
 		parent := (index - 1) / 2
-		if parent == index || h.s[parent].PriorTo(h.s[index]) {
+		if h.prior(h.s[parent], h.s[index]) {
 			break
 		}
 		h.s[index], h.s[parent] = h.s[parent], h.s[index]
@@ -715,18 +747,95 @@ func MoSAlgorithm[E any, Q any](
 	expandQ func(*Q, E),
 	clone func(Q) Q,
 	elements []E,
-	queries [][2]uint64,
+	queries []struct {
+		left  uint64
+		right uint64
+	},
 ) (res []Q) {
+	// Initialization
 	res = make([]Q, len(queries))
-	// #TODO
-
+	sqrt := math.Sqrt(float64(len(elements)))
+	blockSize := uint64(sqrt)
+	blocks := make([]*SingleLinkedList[struct {
+		left  uint64
+		right uint64
+		index uint64
+	}, uint64], uint64(math.Ceil(float64(len(elements))/float64(blockSize))))
+	for i := range blocks {
+		blocks[i] = NewSingleLinkedList[struct {
+			left  uint64
+			right uint64
+			index uint64
+		}, uint64]()
+	}
+	for i, v := range queries {
+		blocks[v.left/blockSize].InsertLast(struct {
+			left  uint64
+			right uint64
+			index uint64
+		}{
+			left:  v.left,
+			right: v.right,
+			index: uint64(i),
+		})
+	}
+	blockSorted := make([]*Queue[struct {
+		left  uint64
+		right uint64
+		index uint64
+	}, uint64])
+	for i := range blocks {
+		blockSorted[i] = blocks[i].ToSlice()
+		SelectionSort(blockSorted[i], func(a, b struct {
+			left  uint64
+			right uint64
+			index uint64
+		}) bool {
+			return a.right < b.right
+		})
+	}
+	// Main
+	for i := uint64(0); i < uint64(len(blockSorted)); i++ {
+		block := blockSorted[i]
+		if block.Len() == 0 {
+			continue
+		}
+		for block.Len() > 0 {
+			if block.First().right/blockSize == i {
+				q := block.RemoveFirst()
+				res[q.index] = querySingleElement(elements[q.left])
+				q.left++
+				for q.left < q.right {
+					expandQ(&res[q.index], elements[q.left])
+				}
+			} else {
+				break
+			}
+		}
+		middleIndex := (i+1)*blockSize - 1
+		rightRes := querySingleElement(elements[middleIndex])
+		rightIndex := middleIndex + 1 // now is the first index of the next block
+		for block.Len() > 0 {
+			q := block.RemoveFirst()
+			for rightIndex < q.right { // Expand right side
+				expandQ(&rightRes, elements[rightIndex])
+				rightIndex++
+			}
+			res[q.index] = clone(rightRes) // Expand left side
+			for q.left < middleIndex {
+				expandQ(&res[q.index], elements[q.left])
+				q.left++
+			}
+		}
+	}
+	return
 }
 
-func SelectionSort[T Prioritizable[T]](slice []T) {
+func SelectionSort[T any](slice []T, Prior func(a, b T) bool) {
 	for i := 0; i < len(slice)-1; i++ {
 		min := i
-		for j := i + 1; j < len(slice); i++ {
-			if slice[j].PriorTo(slice[min]) {
+		for j := i + 1; j < len(slice); j++ {
+			if Prior(slice[j], slice[min]) {
 				min = j
 			}
 		}
@@ -797,9 +906,25 @@ func _() {
 /////////////////////////////////////////////////////////////////////////
 
 func solve(io *IO) {
-	// io.SetFileInput() // Uncomment this while only when debugging
-
-	for T := io.ScanUInt16(); T > 0; T-- {
-		// SOLVE HERE
-	}
+	slice := []int32{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	r := MoSAlgorithm(
+		func(e int32) int32 { return e },
+		func(q *int32, e int32) { *q += e },
+		func(q int32) int32 { return q },
+		slice,
+		[]struct {
+			left  uint64
+			right uint64
+		}{
+			struct {
+				left  uint64
+				right uint64
+			}{1, 4},
+			struct {
+				left  uint64
+				right uint64
+			}{2, 3},
+		},
+	)
+	fmt.Println(r)
 }
