@@ -906,25 +906,9 @@ func _() {
 /////////////////////////////////////////////////////////////////////////
 
 func solve(io *IO) {
-	slice := []int32{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-	r := MoSAlgorithm(
-		func(e int32) int32 { return e },
-		func(q *int32, e int32) { *q += e },
-		func(q int32) int32 { return q },
-		slice,
-		[]struct {
-			left  uint64
-			right uint64
-		}{
-			struct {
-				left  uint64
-				right uint64
-			}{1, 4},
-			struct {
-				left  uint64
-				right uint64
-			}{2, 3},
-		},
-	)
-	fmt.Println(r)
+	// io.SetFileInput() // Uncomment this while only when debugging
+
+	for T := io.ScanUInt16(); T > 0; T-- {
+		// SOLVE HERE
+	}
 }
