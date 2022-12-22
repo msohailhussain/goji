@@ -211,6 +211,7 @@ func (l *SingleLinkedList[T, I]) RemoveLast() (value T) {
 		tmp = tmp.Next
 	}
 	l.last = tmp
+	l.length--
 	return
 }
 
@@ -229,6 +230,7 @@ func (l *SingleLinkedList[T, I]) RemoveAt(index I) T {
 	}
 	res := tmp.Next.Value
 	tmp.Next = tmp.Next.Next
+	l.length--
 	return res
 }
 
@@ -381,28 +383,34 @@ func (h BinaryHeap[T, I]) String() string {
 
 // #region Set
 type Set[T comparable] struct {
-	l SingleLinkedList[T, uint64]
+	m map[T] any
 }
 
 func NewSet[T comparable]() *Set[T] {
-	return &Set[T]{l: *NewSingleLinkedList[T, uint64]()}
+	return &Set[T]{}
 }
-func (s *Set[T]) Add(element T) (added bool) {
-	if !s.l.Contains(element) {
-		s.l.InsertLast(element)
-		return true
-	} else {
-		return false
+func (s *Set[T]) Add(element T) {
+	_, exist := s.m[element]
+	if !exist {
+		s.m[element] = struct{}{}
 	}
 }
-func (s *Set[T]) ToSlice() (res []T) {
-	return s.l.ToSlice()
+func (s *Set[T]) Contains(element T) bool {
+	_, exist := s.m[element]
+	return exist
 }
-func (s *Set[T]) String() (res []T) {
-	return s.l.ToSlice()
+func (s *Set[T]) ToSlice() []T {
+	keys := make([]T, 0, len(s.m))
+	for k := range s.m {
+		keys = append(keys, k)
+	}
+	return keys
 }
-
+func (s *Set[T]) String() string {
+	return fmt.Sprint(s.ToSlice())
+}
 // #endregion
+
 // #region TreeNode
 type TreeNode[T any] struct {
 	Value    T
@@ -783,16 +791,24 @@ func MoSAlgorithm[E any, Q any](
 		left  uint64
 		right uint64
 		index uint64
-	}, uint64])
+	}, uint64], len(blocks))
 	for i := range blocks {
-		blockSorted[i] = blocks[i].ToSlice()
-		SelectionSort(blockSorted[i], func(a, b struct {
+		tmp := blocks[i].ToSlice()
+		SelectionSort(tmp, func(a, b struct {
 			left  uint64
 			right uint64
 			index uint64
 		}) bool {
 			return a.right < b.right
 		})
+		blockSorted[i] = NewQueue[struct {
+			left  uint64
+			right uint64
+			index uint64
+		}, uint64]()
+		for _, tmp2 := range tmp {
+			blockSorted[i].Enqueue(tmp2)
+		}
 	}
 	// Main
 	for i := uint64(0); i < uint64(len(blockSorted)); i++ {
@@ -801,8 +817,8 @@ func MoSAlgorithm[E any, Q any](
 			continue
 		}
 		for block.Len() > 0 {
-			if block.First().right/blockSize == i {
-				q := block.RemoveFirst()
+			if block.Preview().right/blockSize == i {
+				q := block.Dequeue()
 				res[q.index] = querySingleElement(elements[q.left])
 				q.left++
 				for q.left < q.right {
@@ -816,7 +832,7 @@ func MoSAlgorithm[E any, Q any](
 		rightRes := querySingleElement(elements[middleIndex])
 		rightIndex := middleIndex + 1 // now is the first index of the next block
 		for block.Len() > 0 {
-			q := block.RemoveFirst()
+			q := block.Dequeue()
 			for rightIndex < q.right { // Expand right side
 				expandQ(&rightRes, elements[rightIndex])
 				rightIndex++
@@ -906,9 +922,25 @@ func _() {
 /////////////////////////////////////////////////////////////////////////
 
 func solve(io *IO) {
-	// io.SetFileInput() // Uncomment this while only when debugging
-
-	for T := io.ScanUInt16(); T > 0; T-- {
-		// SOLVE HERE
-	}
+	slice := []int32{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	r := MoSAlgorithm(
+		func(e int32) int32 { return e },
+		func(q *int32, e int32) { *q += e },
+		func(q int32) int32 { return q },
+		slice,
+		[]struct {
+			left  uint64
+			right uint64
+		}{
+			struct {
+				left  uint64
+				right uint64
+			}{1, 4},
+			struct {
+				left  uint64
+				right uint64
+			}{2, 3},
+		},
+	)
+	fmt.Println(r)
 }
