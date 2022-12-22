@@ -297,38 +297,38 @@ func (s Stack[T, I]) String() string { return s.l.String() }
 
 // #endregion
 
-// #region Heap
-type BinaryHeap[T any, I Unsigned] struct {
-	s []T
-	prior func(T, T) bool 
+// #region BinaryHeap
+type BinaryHeap[T any] struct {
+	s     []T
+	prior func(T, T) bool
 }
 
 // Note for function Prior: It's a strict order relation
-func NewBinaryHeapFromSlice[T any, I Unsigned](
+func NewBinaryHeapFromSlice[T any](
 	s []T,
-	Prior func(T, T) bool) (h *BinaryHeap[T, I]) {
-	h = &BinaryHeap[T, I]{
-		s: s,
+	Prior func(T, T) bool) (h *BinaryHeap[T]) {
+	h = &BinaryHeap[T]{
+		s:     s,
 		prior: Prior,
 	}
 	if h.Len() > 1 {
-		for i := (h.Len() - 2) / 2; i >= 0; i-- {
-			h.heapifyDown(i)
+		for i := (int64(h.Len()) - 2) / 2; i >= 0; i-- {
+			h.heapifyDown(int64(i))
 		}
 	}
 	return
 }
-func NewBinaryHeap[T any, I Unsigned](Prior func(T, T) bool) *BinaryHeap[T, I] {
-	return &BinaryHeap[T, I]{s: make([]T, 0), prior: Prior}
+func NewBinaryHeap[T any](Prior func(T, T) bool) *BinaryHeap[T] {
+	return &BinaryHeap[T]{s: make([]T, 0), prior: Prior}
 }
-func (h *BinaryHeap[T, I]) Len() I {
-	return I(len(h.s))
+func (h *BinaryHeap[T]) Len() uint64 {
+	return uint64(len(h.s))
 }
-func (h *BinaryHeap[T, I]) Push(value T) {
+func (h *BinaryHeap[T]) Push(value T) {
 	h.s = append(h.s, value)
-	h.heapifyUp(h.Len() - 1)
+	h.heapifyUp(int64(h.Len() - 1))
 }
-func (h *BinaryHeap[T, I]) Pop() (res T) {
+func (h *BinaryHeap[T]) Pop() (res T) {
 	res = h.s[0]
 	h.s[0] = h.s[h.Len()-1]
 	h.s = h.s[:h.Len()-1]
@@ -336,17 +336,17 @@ func (h *BinaryHeap[T, I]) Pop() (res T) {
 	return
 }
 
-func (h *BinaryHeap[T, I]) heapifyDown(index I) bool {
+func (h *BinaryHeap[T]) heapifyDown(index int64) bool {
 	origin := index
 	for {
 		j := index*2 + 2
-		if j < h.Len() {
+		if j < int64(h.Len()) {
 			if h.prior(h.s[j-1], h.s[j]) {
 				j--
 			}
 		} else {
 			j--
-			if j >= h.Len() {
+			if j >= int64(h.Len()) {
 				break
 			}
 		}
@@ -359,7 +359,7 @@ func (h *BinaryHeap[T, I]) heapifyDown(index I) bool {
 	}
 	return origin != index
 }
-func (h *BinaryHeap[T, I]) heapifyUp(index I) {
+func (h *BinaryHeap[T]) heapifyUp(index int64) {
 	for {
 		if index == 0 {
 			break
@@ -372,10 +372,10 @@ func (h *BinaryHeap[T, I]) heapifyUp(index I) {
 		index = parent
 	}
 }
-func (h *BinaryHeap[T, I]) Preview() T {
+func (h *BinaryHeap[T]) Preview() T {
 	return h.s[0]
 }
-func (h BinaryHeap[T, I]) String() string {
+func (h BinaryHeap[T]) String() string {
 	return "" // #TODO
 }
 
@@ -383,7 +383,7 @@ func (h BinaryHeap[T, I]) String() string {
 
 // #region Set
 type Set[T comparable] struct {
-	m map[T] any
+	m map[T]any
 }
 
 func NewSet[T comparable]() *Set[T] {
@@ -409,6 +409,7 @@ func (s *Set[T]) ToSlice() []T {
 func (s *Set[T]) String() string {
 	return fmt.Sprint(s.ToSlice())
 }
+
 // #endregion
 
 // #region TreeNode
@@ -922,25 +923,9 @@ func _() {
 /////////////////////////////////////////////////////////////////////////
 
 func solve(io *IO) {
-	slice := []int32{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-	r := MoSAlgorithm(
-		func(e int32) int32 { return e },
-		func(q *int32, e int32) { *q += e },
-		func(q int32) int32 { return q },
-		slice,
-		[]struct {
-			left  uint64
-			right uint64
-		}{
-			struct {
-				left  uint64
-				right uint64
-			}{1, 4},
-			struct {
-				left  uint64
-				right uint64
-			}{2, 3},
-		},
-	)
-	fmt.Println(r)
+	// io.SetFileInput() // Uncomment this while only when debugging
+
+	for T := io.ScanUInt16(); T > 0; T-- {
+		// SOLVE HERE
+	}
 }
