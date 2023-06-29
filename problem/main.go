@@ -66,9 +66,11 @@ func newSingleLinkedListIterator[T comparable](current *singleLinkedListNode[T])
 		current: current,
 	}
 }
+
 func (it *singleLinkedListIterator[T]) HasNext() bool {
 	return it.current != nil
 }
+
 func (it *singleLinkedListIterator[T]) Next() T {
 	tmp := it.current.Value
 	it.current = it.current.Next
@@ -162,6 +164,7 @@ func (l *SingleLinkedList[T, I]) Contains(value T) bool {
 	}
 	return false
 }
+
 func (l *SingleLinkedList[T, I]) Clear() {
 	l.first = nil
 	l.last = nil
@@ -197,6 +200,7 @@ func (l *SingleLinkedList[T, I]) RemoveFirst() T {
 	}
 	return tmp.Value
 }
+
 func (l *SingleLinkedList[T, I]) RemoveLast() (value T) {
 	value = l.last.Value
 	if l.length == 1 {
@@ -247,6 +251,7 @@ func (l *SingleLinkedList[T, I]) ToSlice() (res []T) {
 func (l *SingleLinkedList[T, I]) GetIterator() Iterator[T] {
 	return newSingleLinkedListIterator(l.first)
 }
+
 func (it SingleLinkedList[T, I]) String() string {
 	return fmt.Sprint(it.ToSlice())
 }
@@ -306,7 +311,8 @@ type BinaryHeap[T any] struct {
 // Note for function Prior: It's a strict order relation
 func NewBinaryHeapFromSlice[T any](
 	s []T,
-	Prior func(T, T) bool) (h *BinaryHeap[T]) {
+	Prior func(T, T) bool,
+) (h *BinaryHeap[T]) {
 	h = &BinaryHeap[T]{
 		s:     s,
 		prior: Prior,
@@ -318,16 +324,20 @@ func NewBinaryHeapFromSlice[T any](
 	}
 	return
 }
+
 func NewBinaryHeap[T any](Prior func(T, T) bool) *BinaryHeap[T] {
 	return &BinaryHeap[T]{s: make([]T, 0), prior: Prior}
 }
+
 func (h *BinaryHeap[T]) Len() uint64 {
 	return uint64(len(h.s))
 }
+
 func (h *BinaryHeap[T]) Push(value T) {
 	h.s = append(h.s, value)
 	h.heapifyUp(int64(h.Len() - 1))
 }
+
 func (h *BinaryHeap[T]) Pop() (res T) {
 	res = h.s[0]
 	h.s[0] = h.s[h.Len()-1]
@@ -359,6 +369,7 @@ func (h *BinaryHeap[T]) heapifyDown(index int64) bool {
 	}
 	return origin != index
 }
+
 func (h *BinaryHeap[T]) heapifyUp(index int64) {
 	for {
 		if index == 0 {
@@ -372,9 +383,11 @@ func (h *BinaryHeap[T]) heapifyUp(index int64) {
 		index = parent
 	}
 }
+
 func (h *BinaryHeap[T]) Preview() T {
 	return h.s[0]
 }
+
 func (h BinaryHeap[T]) String() string {
 	return "" // #TODO
 }
@@ -389,16 +402,19 @@ type Set[T comparable] struct {
 func NewSet[T comparable]() *Set[T] {
 	return &Set[T]{}
 }
+
 func (s *Set[T]) Add(element T) {
 	_, exist := s.m[element]
 	if !exist {
 		s.m[element] = struct{}{}
 	}
 }
+
 func (s *Set[T]) Contains(element T) bool {
 	_, exist := s.m[element]
 	return exist
 }
+
 func (s *Set[T]) ToSlice() []T {
 	keys := make([]T, 0, len(s.m))
 	for k := range s.m {
@@ -406,6 +422,7 @@ func (s *Set[T]) ToSlice() []T {
 	}
 	return keys
 }
+
 func (s *Set[T]) String() string {
 	return fmt.Sprint(s.ToSlice())
 }
@@ -606,7 +623,6 @@ func (root TreeNode[T]) String() string {
 	s := ""
 	for _, line := range linesss[1:] {
 		s += strings.TrimRight(line, " ") + "\n"
-
 	}
 	return s
 }
@@ -683,7 +699,7 @@ func (s *SqrtDecompositionSimple[E, Q]) Query(start uint64, end uint64) Q {
 			start++
 		}
 
-		//middle part
+		// middle part
 		endBlock := end / s.blockSize
 		for i := firstIndexNextBlock / s.blockSize; i < endBlock; i++ {
 			q = s.mergeQ(q, s.blocks[i])
@@ -713,18 +729,21 @@ func Max[T Ordered](a, b T) T {
 	}
 	return b
 }
+
 func Min[T Ordered](a, b T) T {
 	if a <= b {
 		return a
 	}
 	return b
 }
+
 func Abs[T Integer | Float](a T) T {
 	if a < 0 {
 		return -a
 	}
 	return a
 }
+
 func Swap[T any](a, b *T) {
 	*a, *b = *b, *a
 }
@@ -800,7 +819,8 @@ func MoSAlgorithm[E any, Q any](
 			left  uint64
 			right uint64
 			index uint64
-		}) bool {
+		},
+		) bool {
 			return a.right < b.right
 		})
 		blockSorted[i] = NewQueue[struct {
@@ -927,9 +947,7 @@ func _() {
 /////////////////////////////////////////////////////////////////////////
 
 func solve(io *IO) {
-
 	for T := io.ScanUInt16(); T > 0; T-- {
 		// SOLVE HERE
-		 io.PrintLn(2)
 	}
 }

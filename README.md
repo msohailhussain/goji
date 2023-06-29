@@ -34,6 +34,7 @@ If you want to solve multiple problems simultanously (like in contests) just cop
 5. Becoming a maintainer
 
 ## Future proposals
+- Make the workflow works
 - Create a library/module called actually "goji" with all data structures and algorithms but for general use, so well organized in packages
 
 ## Some source code
