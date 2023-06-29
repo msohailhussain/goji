@@ -22,8 +22,6 @@ jobs:
           # This is important to fetch the changes to the previous commit
           fetch-depth: 0
   
-      - name: Format code
-        uses: iamnotaturtle/auto-gofmt@v1.0
-        with:
-          # This part is also where you can pass other options, for example:
-          only_changed: false
+      - name: auto-gofmt
+        uses: iamnotaturtle/auto-gofmt@v2.1.0
+        
