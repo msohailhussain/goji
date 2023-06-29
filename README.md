@@ -1,10 +1,12 @@
 # Competitive programming golang environment with template
 ![](goji-image.jpg)
+
+IT DOES CURRENTLY SUPPORT CODEFORCES PLATFORM
+
 ## Usage
 1. Open The folder in vscode
 2. Using remote container extension, select reopen in container
 3. Install all tools suggested by vscode
-4. Leave only the main (and optionally the solve) function related to your platform
 4. Code!
     - Use io.Scan... and io.Print... (always add a newline at the end of a solve). P.s. If you are using Leetcode ignore this.
     - Use "log" to print while debugging

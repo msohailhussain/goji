@@ -869,16 +869,19 @@ type IO struct {
 	w *bufio.Writer
 }
 
-func newIO() IO {
-	return IO{
-		r: bufio.NewReader(os.Stdin),
+// Is assumed that input.txt file exists
+func newIO() (io IO) {
+	io = IO{
 		w: bufio.NewWriter(os.Stdout),
 	}
-}
-
-// Is assumed that input.txt file exists
-func (io *IO) SetFileInput() {
-	io.r = bufio.NewReader(First(os.Open("input.txt")))
+	for _, arg := range os.Args {
+		if arg == "🍓" { // this should be passed only when debugging
+			io.r = bufio.NewReader(First(os.Open("input.txt")))
+			return
+		}
+	}
+	io.r = bufio.NewReader(os.Stdin)
+	return
 }
 
 func (io *IO) ScanInt8() (x int8)   { fmt.Fscan(io.r, &x); return }
@@ -924,9 +927,9 @@ func _() {
 /////////////////////////////////////////////////////////////////////////
 
 func solve(io *IO) {
-	// io.SetFileInput() // Uncomment this while only when debugging
 
 	for T := io.ScanUInt16(); T > 0; T-- {
 		// SOLVE HERE
+		 io.PrintLn(2)
 	}
 }
