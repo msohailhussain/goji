@@ -17,12 +17,13 @@ import (
 	"unicode/utf8"
 )
 
+// When debug is assumed that input.txt file exists
 func main() {
 	io := IO{
 		w: bufio.NewWriter(os.Stdout),
 	}
 	for _, arg := range os.Args {
-		if arg == "🍓" { // this should be passed only when debugging
+		if arg == "∰" { // this should be passed only when debugging
 			io.r = bufio.NewReader(First(os.Open("input.txt")))
 			goto here
 		}
@@ -262,7 +263,7 @@ func (l *SingleLinkedList[T, I]) GetIterator() Iterator[T] {
 	return newSingleLinkedListIterator(l.first)
 }
 
-func (it SingleLinkedList[T, I]) String() string {
+func (it SingleLinkedList[T, I]) Log() string {
 	return fmt.Sprint(it.ToSlice())
 }
 
@@ -286,7 +287,7 @@ func (q *Queue[T, I]) Len() I          { return q.l.length }
 func (q *Queue[T, I]) Enqueue(value T) { q.l.InsertLast(value) }
 func (q *Queue[T, I]) Dequeue() T      { return q.l.RemoveFirst() }
 func (q *Queue[T, I]) Preview() T      { return q.l.First() }
-func (q Queue[T, I]) String() string   { return q.l.String() }
+func (q Queue[T, I]) Log() string      { return q.l.Log() }
 
 // #endregion
 // #region Stack
@@ -304,11 +305,11 @@ func NewStack[T comparable, I Unsigned]() *Stack[T, I] {
 		},
 	}
 }
-func (s *Stack[T, I]) Len() I        { return s.l.length }
-func (s *Stack[T, I]) Push(value T)  { s.l.InsertFirst(value) }
-func (s *Stack[T, I]) Pop() T        { return s.l.RemoveFirst() }
-func (s *Stack[T, I]) Preview() T    { return s.l.First() }
-func (s Stack[T, I]) String() string { return s.l.String() }
+func (s *Stack[T, I]) Len() I       { return s.l.length }
+func (s *Stack[T, I]) Push(value T) { s.l.InsertFirst(value) }
+func (s *Stack[T, I]) Pop() T       { return s.l.RemoveFirst() }
+func (s *Stack[T, I]) Preview() T   { return s.l.First() }
+func (s Stack[T, I]) Log() string   { return s.l.Log() }
 
 // #endregion
 
@@ -398,7 +399,7 @@ func (h *BinaryHeap[T]) Preview() T {
 	return h.s[0]
 }
 
-func (h BinaryHeap[T]) String() string {
+func (h BinaryHeap[T]) Log() string {
 	return "" // #TODO
 }
 
@@ -410,7 +411,7 @@ type Set[T comparable] struct {
 }
 
 func NewSet[T comparable]() *Set[T] {
-	return &Set[T]{}
+	return &Set[T]{m: make(map[T]any)}
 }
 
 func (s *Set[T]) Add(element T) {
@@ -433,7 +434,7 @@ func (s *Set[T]) ToSlice() []T {
 	return keys
 }
 
-func (s *Set[T]) String() string {
+func (s *Set[T]) Log() string {
 	return fmt.Sprint(s.ToSlice())
 }
 
@@ -446,7 +447,7 @@ type TreeNode[T any] struct {
 }
 
 // main source: https://github.com/shivamMg/ppds/blob/master/tree/tree.go
-func (root TreeNode[T]) String() string {
+func (root TreeNode[T]) Log() string {
 	const (
 		BoxVer       = "│"
 		BoxHor       = "─"
@@ -638,9 +639,14 @@ func (root TreeNode[T]) String() string {
 }
 
 // #endregion
-// #region SqrtDecompositionSimple
+
+// #region Trie
+
+// #endregion
+
+// #region SqrtDecomposition
 /*
-You can use SqrtDecompositionSimple only if:
+You can use SqrtDecomposition only if:
 
 Given a function $Query:E_1,...,E_n\rightarrow Q$
 
@@ -653,7 +659,7 @@ s.t.
 - (Only if you want use $update$ function)
 $\forall n\in \N > 0, E_1,..., E_n\in E \\ query(E_1,...,E_{new},..., E_n)=updateQ(query(E_1,...,E_{old},...,E_n), indexof(E_{old}), E_{new})$
 */
-type SqrtDecompositionSimple[E any, Q any] struct {
+type SqrtDecomposition[E any, Q any] struct {
 	querySingleElement func(element E) Q
 	mergeQ             func(q1 Q, q2 Q) Q
 	updateQ            func(oldQ Q, oldE E, newE E) (newQ Q)
@@ -664,13 +670,13 @@ type SqrtDecompositionSimple[E any, Q any] struct {
 }
 
 // len(elements) > 0
-func NewSqrtDecompositionSimple[E any, Q any](
+func NewSqrtDecomposition[E any, Q any](
 	elements []E,
 	querySingleElement func(element E) Q,
 	mergeQ func(q1 Q, q2 Q) Q,
 	updateQ func(oldQ Q, oldE E, newE E) (newQ Q),
-) *SqrtDecompositionSimple[E, Q] {
-	sqrtDec := &SqrtDecompositionSimple[E, Q]{
+) *SqrtDecomposition[E, Q] {
+	sqrtDec := &SqrtDecomposition[E, Q]{
 		querySingleElement: querySingleElement,
 		mergeQ:             mergeQ,
 		updateQ:            updateQ,
@@ -692,7 +698,7 @@ func NewSqrtDecompositionSimple[E any, Q any](
 }
 
 // start < end (non included). Both are valid
-func (s *SqrtDecompositionSimple[E, Q]) Query(start uint64, end uint64) Q {
+func (s *SqrtDecomposition[E, Q]) Query(start uint64, end uint64) Q {
 	firstIndexNextBlock := ((start / s.blockSize) + 1) * s.blockSize
 	q := s.querySingleElement(s.elements[start])
 	if firstIndexNextBlock > end { // if in same block
@@ -724,7 +730,7 @@ func (s *SqrtDecompositionSimple[E, Q]) Query(start uint64, end uint64) Q {
 }
 
 // index is valid
-func (s *SqrtDecompositionSimple[E, Q]) Update(index uint64, newElement E) {
+func (s *SqrtDecomposition[E, Q]) Update(index uint64, newElement E) {
 	i := index / s.blockSize
 	s.blocks[i] = s.updateQ(s.blocks[i], s.elements[index], newElement)
 	s.elements[index] = newElement
@@ -899,30 +905,15 @@ type IO struct {
 	w *bufio.Writer
 }
 
-// Is assumed that input.txt file exists
-func newIO() (io IO) {
-	io = IO{
-		w: bufio.NewWriter(os.Stdout),
-	}
-	for _, arg := range os.Args {
-		if arg == "🍓" { // this should be passed only when debugging
-			io.r = bufio.NewReader(First(os.Open("input.txt")))
-			return
-		}
-	}
-	io.r = bufio.NewReader(os.Stdin)
-	return
-}
-
 func (io *IO) ScanInt8() (x int8)   { fmt.Fscan(io.r, &x); return }
 func (io *IO) ScanInt16() (x int16) { fmt.Fscan(io.r, &x); return }
 func (io *IO) ScanInt32() (x int32) { fmt.Fscan(io.r, &x); return }
-func (io *IO) ScanInt() (x int) { fmt.Fscan(io.r, &x); return }
+func (io *IO) ScanInt() (x int)     { fmt.Fscan(io.r, &x); return }
 
 func (io *IO) ScanUInt8() (x uint8)   { fmt.Fscan(io.r, &x); return }
 func (io *IO) ScanUInt16() (x uint16) { fmt.Fscan(io.r, &x); return }
 func (io *IO) ScanUInt32() (x uint32) { fmt.Fscan(io.r, &x); return }
-func (io *IO) ScanUInt() (x uint) { fmt.Fscan(io.r, &x); return }
+func (io *IO) ScanUInt() (x uint)     { fmt.Fscan(io.r, &x); return }
 
 func (io *IO) ScanFloat32() (x float32) { fmt.Fscan(io.r, &x); return }
 func (io *IO) ScanFloat64() (x float64) { fmt.Fscan(io.r, &x); return }

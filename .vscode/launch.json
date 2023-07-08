@@ -9,8 +9,8 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${fileDirname}",
-            "args": ["🍓"],
+            "program": "${fileDirnameBasename}/main.go",
+            "args": ["∰"],
         }
     ]
 }
