@@ -18,4 +18,4 @@ jobs:
         ref: ${{ github.head_ref }}
         fetch-depth: 0
     - name: auto-gofmt
-      uses: iamnotaturtle/auto-gofmt@v2
+      uses: iamnotaturtle/auto-gofmt@v2.1
