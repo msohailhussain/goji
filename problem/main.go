@@ -14,7 +14,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"unicode/utf8"
+	  "unicode/utf8"
 )
 
 // When debug is assumed that input.txt file exists
