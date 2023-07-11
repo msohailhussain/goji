@@ -12,10 +12,10 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@main
+      uses: actions/checkout@v3
       with:
         set-safe-directory: '*'
         ref: ${{ github.head_ref }}
         fetch-depth: 0
     - name: auto-gofmt
-      uses: iamnotaturtle/auto-gofmt@master
+      uses: iamnotaturtle/auto-gofmt@v2
