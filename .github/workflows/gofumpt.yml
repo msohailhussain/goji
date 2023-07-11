@@ -16,6 +16,7 @@ jobs:
       with:
         ref: ${{ github.head_ref }}
         fetch-depth: 0
-
+    - name: Set ownership
+      run: chown -R $(id -u):$(id -g) $PWD
     - name: auto-gofmt
       uses: iamnotaturtle/auto-gofmt@master
