@@ -3,11 +3,14 @@
 	"build": {
 		"dockerfile": "Dockerfile"
 	},
+	"postAttachCommand": "code --install-extension KaustubhSathe.vscode-codeforces && node ~/.vscode-remote/extensions/kaustubhsathe.vscode-codeforces-0.0.1/node_modules/puppeteer/install.js",
+	"remoteUser": "user",
 	"customizations": {
 		"vscode": {
 			"extensions": [
 				"golang.Go",
-				"SantaCodes.santacodes-region-viewer"
+				"SantaCodes.santacodes-region-viewer",
+				"KaustubhSathe.vscode-codeforces"
 			],
 			"settings": {
 				"gopls": {
