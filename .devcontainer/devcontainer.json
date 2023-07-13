@@ -3,8 +3,6 @@
 	"build": {
 		"dockerfile": "Dockerfile"
 	},
-	"postAttachCommand": "code --install-extension KaustubhSathe.vscode-codeforces && node ~/.vscode-remote/extensions/kaustubhsathe.vscode-codeforces-0.0.1/node_modules/puppeteer/install.js",
-	"remoteUser": "user",
 	"customizations": {
 		"vscode": {
 			"extensions": [
