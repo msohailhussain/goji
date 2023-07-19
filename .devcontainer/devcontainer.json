@@ -7,8 +7,6 @@
 		"vscode": {
 			"extensions": [
 				"golang.Go",
-				"SantaCodes.santacodes-region-viewer",
-				"KaustubhSathe.vscode-codeforces"
 			],
 			"settings": {
 				"gopls": {
