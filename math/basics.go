@@ -22,3 +22,11 @@ func Abs[T constraints.Integer | constraints.Float](a T) T {
 	}
 	return a
 }
+
+func Diff[T constraints.Integer | constraints.Float](a, b T) T {
+	if a >= b {
+		return a - b
+	} else {
+		return b - a
+	}
+}
