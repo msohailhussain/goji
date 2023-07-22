@@ -1,8 +1,11 @@
+package math
+
+import "golang.org/x/exp/constraints"
 
 // At least one != 0
-func GCD[T Unsigned](a, b T) T {
+func GCD[T constraints.Unsigned](a, b T) T {
 	if b < a {
-		Swap(&a, &b)
+		a, b = b, a
 	}
 	for {
 		if a == 0 {
@@ -15,6 +18,6 @@ func GCD[T Unsigned](a, b T) T {
 }
 
 // At least one != 0
-func LCM[T Unsigned](a, b T) T {
+func LCM[T constraints.Unsigned](a, b T) T {
 	return (a * b) / GCD(a, b)
 }

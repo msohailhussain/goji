@@ -1,18 +1,22 @@
-func Max[T Ordered](a, b T) T {
+package math
+
+import "golang.org/x/exp/constraints"
+
+func Max[T constraints.Ordered](a, b T) T {
 	if a >= b {
 		return a
 	}
 	return b
 }
 
-func Min[T Ordered](a, b T) T {
+func Min[T constraints.Ordered](a, b T) T {
 	if a <= b {
 		return a
 	}
 	return b
 }
 
-func Abs[T Integer | Float](a T) T {
+func Abs[T constraints.Integer | constraints.Float](a T) T {
 	if a < 0 {
 		return -a
 	}

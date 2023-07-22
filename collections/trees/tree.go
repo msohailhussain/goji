@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/lorenzotinfena/goji/collections"
 )
 
 type TreeNode[T any] struct {
 	Value    T
 	Children []*TreeNode[T]
 }
+
 // main source: https://github.com/shivamMg/ppds/blob/master/tree/tree.go
 func (root TreeNode[T]) Log() string {
 	const (
@@ -146,14 +149,14 @@ func (root TreeNode[T]) Log() string {
 
 	setPaddings(paddings, map[*TreeNode[T]]int{}, 0, &root)
 
-	q := NewQueue[*TreeNode[T], uint64]()
+	q := collections.NewQueue[*TreeNode[T]]()
 	q.Enqueue(&root)
 	linesss := []string{}
 	for q.Len() > 0 {
 		branches, nodes := "", ""
 		covered := 0
 		qLen := q.Len()
-		for i := uint64(0); i < qLen; i++ {
+		for i := 0; i < qLen; i++ {
 			n := q.Dequeue()
 			for _, c := range n.Children {
 				q.Enqueue(c)

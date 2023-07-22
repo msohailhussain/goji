@@ -1,3 +1,9 @@
+package sets
+
+import (
+	"fmt"
+)
+
 type Set[T comparable] struct {
 	m map[T]any
 }

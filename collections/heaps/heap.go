@@ -1,3 +1,5 @@
+package heaps
+
 type BinaryHeap[T any] struct {
 	s     []T
 	prior func(T, T) bool

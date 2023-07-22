@@ -1,5 +1,12 @@
 package sqrt
 
+import (
+	"math"
+
+	"github.com/lorenzotinfena/goji/collections"
+	"github.com/lorenzotinfena/goji/sort"
+)
+
 // Use this if in SqrtDecompsitionSimple, the mergeQ function is hard, but an expandQ function is easy
 func MoSAlgorithm[E any, Q any](
 	querySingleElement func(element E) Q,
@@ -15,17 +22,17 @@ func MoSAlgorithm[E any, Q any](
 	res = make([]Q, len(queries))
 	sqrt := math.Sqrt(float64(len(elements)))
 	blockSize := uint64(sqrt)
-	blocks := make([]*SingleLinkedList[struct {
+	blocks := make([]*collections.SingleLinkedList[struct {
 		left  uint64
 		right uint64
 		index uint64
-	}, uint64], uint64(math.Ceil(float64(len(elements))/float64(blockSize))))
+	}], uint64(math.Ceil(float64(len(elements))/float64(blockSize))))
 	for i := range blocks {
-		blocks[i] = NewSingleLinkedList[struct {
+		blocks[i] = collections.NewSingleLinkedList[struct {
 			left  uint64
 			right uint64
 			index uint64
-		}, uint64]()
+		}]()
 	}
 	for i, v := range queries {
 		blocks[v.left/blockSize].InsertLast(struct {
@@ -38,14 +45,14 @@ func MoSAlgorithm[E any, Q any](
 			index: uint64(i),
 		})
 	}
-	blockSorted := make([]*Queue[struct {
+	blockSorted := make([]*collections.Queue[struct {
 		left  uint64
 		right uint64
 		index uint64
-	}, uint64], len(blocks))
+	}], len(blocks))
 	for i := range blocks {
 		tmp := blocks[i].ToSlice()
-		SelectionSort(tmp, func(a, b struct {
+		sort.SelectionSort(tmp, func(a, b struct {
 			left  uint64
 			right uint64
 			index uint64
@@ -53,11 +60,11 @@ func MoSAlgorithm[E any, Q any](
 		) bool {
 			return a.right < b.right
 		})
-		blockSorted[i] = NewQueue[struct {
+		blockSorted[i] = collections.NewQueue[struct {
 			left  uint64
 			right uint64
 			index uint64
-		}, uint64]()
+		}]()
 		for _, tmp2 := range tmp {
 			blockSorted[i].Enqueue(tmp2)
 		}

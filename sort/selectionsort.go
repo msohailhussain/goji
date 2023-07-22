@@ -1,3 +1,5 @@
+package sort
+
 func SelectionSort[T any](slice []T, Prior func(a, b T) bool) {
 	for i := 0; i < len(slice)-1; i++ {
 		min := i
