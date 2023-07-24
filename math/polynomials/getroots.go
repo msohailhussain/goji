@@ -15,7 +15,8 @@ import (
 func ComputeRoots(coefficients ...float64) (realRoots []float64, complexRoots []complex128) {
 	realRoots = make([]float64, 0, len(coefficients))
 	complexRoots = make([]complex128, 0, len(coefficients))
-	switch len(coefficients) {
+	degree := len(coefficients) - 1
+	switch degree {
 	case 1:
 		realRoots = append(realRoots, -coefficients[0])
 	case 2:
