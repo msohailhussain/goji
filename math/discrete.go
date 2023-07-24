@@ -16,7 +16,7 @@ func GCD[T constraints.Integer](a, b T) T {
 // It returns the positive solution
 // If one is 0, returns 0
 // Assumptions:
-// - At least one != 0
+// - Both != 0
 func LCM[T constraints.Integer](a, b T) T {
 	return Abs(a*b) / GCD(a, b)
 }

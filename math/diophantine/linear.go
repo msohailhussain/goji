@@ -1,21 +1,22 @@
-package math
+package diophantine
 
 import "golang.org/x/exp/constraints"
 
+// gcd can be negative
+// source: https://cp-algorithms.com/algebra/extended-euclid-algorithm.html#algorithm
 // Assumptions:
 // - At least one != 0
-// source: https://cp-algorithms.com/algebra/extended-euclid-algorithm.html#algorithm
-func ExtendedEuclideanAlgorithm[T constraints.Integer](a, b T) (T, int, int) {
+func ExtendedEuclideanAlgorithm[T constraints.Integer](a, b T) (gcd T, x, y int) {
 	if b == 0 {
 		return a, 1, 0
 	}
 	gcd, xTmp, yTmp := ExtendedEuclideanAlgorithm(b, a%b)
-	y := xTmp - yTmp*int(a/b)
-	x := yTmp
+	y = xTmp - yTmp*int(a/b)
+	x = yTmp
 	return gcd, x, y
 }
 
-// https://cp-algorithms.com/algebra/linear-diophantine-equation.html#algorithmic-solution
+// See https://cp-algorithms.com/algebra/linear-diophantine-equation.html#algorithmic-solution
 // Given ax+by=c returns:
 // - if it has solutions (zero or infinite)
 // - gcd(a,b)
