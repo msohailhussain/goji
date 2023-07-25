@@ -85,6 +85,6 @@ func (h *BinaryHeap[T]) Preview() T {
 	return h.s[0]
 }
 
-func (h BinaryHeap[T]) Log() string {
+func (h BinaryHeap[T]) String() string {
 	return "" // #TODO
 }

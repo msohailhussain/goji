@@ -14,7 +14,7 @@ type TreeNode[T any] struct {
 }
 
 // source: https://github.com/shivamMg/ppds/blob/master/tree/tree.go
-func (root TreeNode[T]) Log() string {
+func (root TreeNode[T]) String() string {
 	const (
 		BoxVer       = "│"
 		BoxHor       = "─"

@@ -18,6 +18,9 @@ func (s *Set[T]) Add(element T) {
 		s.m[element] = struct{}{}
 	}
 }
+func (s *Set[T]) Remove(element T) {
+	delete(s.m, element)
+}
 
 func (s *Set[T]) Contains(element T) bool {
 	_, exist := s.m[element]
