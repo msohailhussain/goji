@@ -177,7 +177,30 @@ func (l *SingleLinkedList[T]) ToSlice() (res []T) {
 	}
 	return
 }
+func (l *SingleLinkedList[T]) Iterate() Iterator[T] {
+	return newSingleLinkedListIterator(l.first)
+}
 
 func (it SingleLinkedList[T]) String() string {
 	return fmt.Sprint(it.ToSlice())
+}
+
+type singleLinkedListIterator[T comparable] struct {
+	current *singleLinkedListNode[T]
+}
+
+func newSingleLinkedListIterator[T comparable](current *singleLinkedListNode[T]) Iterator[T] {
+	return &singleLinkedListIterator[T]{
+		current: current,
+	}
+}
+
+func (it *singleLinkedListIterator[T]) HasNext() bool {
+	return it.current != nil
+}
+
+func (it *singleLinkedListIterator[T]) Next() T {
+	tmp := it.current.Value
+	it.current = it.current.Next
+	return tmp
 }
