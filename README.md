@@ -1,41 +1,10 @@
-# Competitive programming golang environment with template
+# Data structures and algorithms Golang library
 ![](goji-image.jpg)
 
-IT DOES CURRENTLY SUPPORT CODEFORCES PLATFORM
-
-## Usage
-1. Open The folder in vscode
-2. Using remote container extension, select reopen in container
-3. Install all tools suggested by vscode
-4. Code!
-    - Use io.Scan... and io.Print... (always add a newline at the end of a solve). P.s. If you are using Leetcode ignore this.
-    - Use "log" to print while debugging
-
-If you want to solve multiple problems simultanously (like in contests) just copy paste "problem" folder for each problem
-
-## Assuntions
+## Assumptions
 1. Every pointer receiver method assume that the pointer is not nil
 2. All assumption (if any) are specified in each function
 3. Numbers ovewflow errors are not covered
 
-## Naming conventions different from standard:
-1. For any function (not methods)/type/interface that can be directly be used in competition use uppercase, otherwise use lowercase
-2. Every field in a struct is private, every private method is lowercase, and every public method is uppercase
-
-## Go docs
-- https://go101.org/article/type-system-overview.html
-- https://the-algorithms.com/language/go
-
-## How to contribute
-1. Reporting a bug
-2. Discussing the current state of the code
-3. Submitting a fix
-4. Proposing new features
-5. Becoming a maintainer
-
-## Future proposals
-- Make the workflow works
-- Create a library/module called actually "goji" with all data structures and algorithms but for general use, so well organized in packages
-
-## Some source code
-- https://github.com/shivamMg/ppds/tree/master/tree
+## Limitations
+This library is for general purpose, but I want to maintain it compatible with https://github.com/lorenzotinfena/competitive-go so all the code should respect the limitations explained in the library. Maybe in the future the limitations could become less strict.

@@ -1,6 +1,8 @@
 package diophantine
 
-import "golang.org/x/exp/constraints"
+import (
+	"golang.org/x/exp/constraints"
+)
 
 // gcd can be negative
 // source: https://cp-algorithms.com/algebra/extended-euclid-algorithm.html#algorithm
