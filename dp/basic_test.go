@@ -28,5 +28,4 @@ func TestDP(t *testing.T) {
 		},
 	)
 	assert.Equal(t, 60, dp.Get(MakePair(len(values)-1, W)))
-
 }

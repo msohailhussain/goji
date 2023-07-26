@@ -1,6 +1,18 @@
 package dp
 
 // Top-down or memoization approach to dp
+//
+// Usage example for fiboacci:
+// dp := NewDP(
+// 	func(get func(int) int,
+// 		k int) int {
+// 		if k <= 1{
+// 			return k
+// 		}
+// 		return get(k-1)+get(k-2)
+// 	},
+// )
+// dp.Get(20)
 type DP[Key comparable, Value any] struct {
 	m          map[Key]Value
 	recurrence func(get func(Key) Value, k Key) Value // Recurrence equation
