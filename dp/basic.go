@@ -1,23 +1,23 @@
 package dp
 
 // Top-down or memoization approach to dp
-type DP[K comparable, V any] struct {
-	m            map[K]V
-	computeValue func(get func(key K) (value V), key K) (value V)
+type DP[Key comparable, Value any] struct {
+	m          map[Key]Value
+	recurrence func(get func(Key) Value, k Key) Value // Recurrence equation
 }
 
-func NewDP[K comparable, V any](computeValue func(get func(key K) (value V), key K) (value V)) *DP[K, V] {
-	return &DP[K, V]{
-		m:            make(map[K]V),
-		computeValue: computeValue,
+func NewDP[Key comparable, Value any](recurrence func(get func(Key) Value, k Key) Value) *DP[Key, Value] {
+	return &DP[Key, Value]{
+		m:          make(map[Key]Value),
+		recurrence: recurrence,
 	}
 }
 
-func (dp *DP[K, V]) Get(key K) (value V) {
+func (dp *DP[Key, Value]) Get(key Key) Value {
 	value, found := dp.m[key]
 	if !found {
-		value = dp.computeValue(dp.Get, key)
+		value = dp.recurrence(dp.Get, key)
 		dp.m[key] = value
 	}
-	return
+	return value
 }

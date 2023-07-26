@@ -14,16 +14,19 @@ func TestDP(t *testing.T) {
 	values := []int{20, 5, 10, 40, 15, 25}
 	weights := []int{1, 2, 3, 8, 7, 4}
 	W := 10
-	dp := NewDP(func(get func(key Pair[int, int]) (value int), k Pair[int, int]) int {
-		if k.First < 0 {
-			return 0
-		}
-		max := get(MakePair(k.First-1, k.Second))
-		if k.Second >= weights[k.First] {
-			max = Max(max, values[k.First]+get(MakePair(k.First-1, k.Second-weights[k.First])))
-		}
-		return max
-	})
+	dp := NewDP(
+		func(get func(Pair[int, int]) int,
+			k Pair[int, int]) int {
+			if k.First < 0 {
+				return 0
+			}
+			max := get(MakePair(k.First-1, k.Second))
+			if k.Second >= weights[k.First] {
+				max = Max(max, values[k.First]+get(MakePair(k.First-1, k.Second-weights[k.First])))
+			}
+			return max
+		},
+	)
 	assert.Equal(t, 60, dp.Get(MakePair(len(values)-1, W)))
 
 }
