@@ -2,7 +2,7 @@ package dp
 
 import "fmt"
 
-// Top-down or memoization approach to dp
+// You can use this as a top-down or bottom-up approach to dp (or a mix of both)
 //
 // Usage example for fiboacci:
 // dp := NewDP(
@@ -22,6 +22,7 @@ type DP[Key comparable, Value any] struct {
 	recurrence func(get func(Key) Value, k Key) Value // Recurrence equation
 }
 
+// Pass nil if you don't want use memoization
 func NewDP[Key comparable, Value any](recurrence func(get func(Key) Value, k Key) Value) *DP[Key, Value] {
 	return &DP[Key, Value]{
 		m:          make(map[Key]Value),
@@ -29,6 +30,7 @@ func NewDP[Key comparable, Value any](recurrence func(get func(Key) Value, k Key
 	}
 }
 
+// If dp is created without the intention to use memoization, found is always true
 func (dp *DP[Key, Value]) Get(k Key) Value {
 	value, found := dp.m[k]
 	if !found {
