@@ -13,7 +13,7 @@ type TreeNode[T any] struct {
 	Children []*TreeNode[T]
 }
 
-// source: https://github.com/shivamMg/ppds/blob/master/tree/tree.go
+// Using code from: github.com/shivamMg/ppds/blob/master/tree/tree.go
 func (root TreeNode[T]) String() string {
 	const (
 		BoxVer       = "│"
