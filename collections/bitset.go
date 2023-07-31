@@ -86,3 +86,7 @@ func (b *Bitset[T]) ShiftRight(n int) {
 	)
 	b.startingBitIndex = newStartingBitIndex
 }
+
+func (b *Bitset[T]) shitData(c int) {
+	
+}
