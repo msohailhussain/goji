@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/lorenzotinfena/goji/sort"
+	"github.com/lorenzotinfena/goji/utils"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,7 +20,7 @@ func TestLowerUpperBound(t *testing.T) {
 		{[]int{1, 2, 4, 5}, 3, 2, 2},
 	}
 	for _, ts := range testcases {
-		assert.Equal(t, ts.expectedLowerBound, sort.LowerBound(ts.v, ts.element))
-		assert.Equal(t, ts.expectedUpperBound, sort.UpperBound(ts.v, ts.element))
+		assert.Equal(t, ts.expectedLowerBound, sort.LowerBound(ts.v, ts.element, utils.Prioritize[int]()))
+		assert.Equal(t, ts.expectedUpperBound, sort.UpperBound(ts.v, ts.element, utils.Prioritize[int]()))
 	}
 }

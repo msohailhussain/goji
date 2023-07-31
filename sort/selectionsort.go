@@ -1,10 +1,10 @@
 package sort
 
-func SelectionSort[T any](slice []T, Prior func(a, b T) bool) {
+func SelectionSort[T any](slice []T, prior func(a, b T) bool) {
 	for i := 0; i < len(slice)-1; i++ {
 		min := i
 		for j := i + 1; j < len(slice); j++ {
-			if Prior(slice[j], slice[min]) {
+			if prior(slice[j], slice[min]) {
 				min = j
 			}
 		}

@@ -8,11 +8,11 @@ type BinaryHeap[T any] struct {
 // Note for function Prior: It's a strict order relation
 func NewBinaryHeapFromSlice[T any](
 	s []T,
-	Prior func(T, T) bool,
+	prior func(T, T) bool,
 ) (h *BinaryHeap[T]) {
 	h = &BinaryHeap[T]{
 		s:     s,
-		prior: Prior,
+		prior: prior,
 	}
 	if h.Len() > 1 {
 		for i := (int64(h.Len()) - 2) / 2; i >= 0; i-- {
