@@ -2,17 +2,20 @@ package dp
 
 import "fmt"
 
-// You can use this as a top-down or bottom-up approach to dp (or a mix of both)
+// You can use this as a top-down or bottom-up approach to dp (or a mix of both),
+// but for a pure bottom-up approach this is a bit overengineered
 //
-// Usage example for fiboacci:
+// Usage example for fibonacci:
 // dp := NewDP(
 //
 //	func(get func(int) int,
+//
 //		k int) int {
-//		if k <= 1{
+//		if k <= 1 {
 //			return k
 //		}
-//		return get(k-1)+get(k-2)
+//
+//		return get(k-1) + get(k-2)
 //	},
 //
 // )
