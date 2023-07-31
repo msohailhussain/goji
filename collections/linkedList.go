@@ -1,6 +1,10 @@
 package collections
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/lorenzotinfena/goji/utils"
+)
 
 type singleLinkedListNode[T comparable] struct {
 	Value T
@@ -177,7 +181,7 @@ func (l *SingleLinkedList[T]) ToSlice() (res []T) {
 	}
 	return
 }
-func (l *SingleLinkedList[T]) Iterate() Iterator[T] {
+func (l *SingleLinkedList[T]) Iterate() utils.Iterator[T] {
 	return newSingleLinkedListIterator(l.first)
 }
 
@@ -189,7 +193,7 @@ type singleLinkedListIterator[T comparable] struct {
 	current *singleLinkedListNode[T]
 }
 
-func newSingleLinkedListIterator[T comparable](current *singleLinkedListNode[T]) Iterator[T] {
+func newSingleLinkedListIterator[T comparable](current *singleLinkedListNode[T]) utils.Iterator[T] {
 	return &singleLinkedListIterator[T]{
 		current: current,
 	}
