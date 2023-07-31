@@ -88,5 +88,5 @@ func (b *Bitset[T]) ShiftRight(n int) {
 }
 
 func (b *Bitset[T]) shitData(c int) {
-	
+
 }
