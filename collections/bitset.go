@@ -5,96 +5,90 @@ import (
 	"math/bits"
 )
 
-type Bitset[T any] struct {
-	size             int
-	startingBitIndex int // in [0,size)
-	data             []uint
+type Bitset struct {
+	size int
+	data []uint
 }
 
-const arch = bits.UintSize
+const blockSize = bits.UintSize
 
-func NewBiset[T any](size int) *Bitset[T] {
-	dim := (size-1)/arch + 1
-	return &Bitset[T]{
-		size:             size,
-		startingBitIndex: 0,
-		data:             make([]uint, dim),
+func NewBiset(size int) *Bitset {
+	dim := (size-1)/blockSize + 1
+	return &Bitset{
+		size: size,
+		data: make([]uint, dim),
 	}
 }
-func (b *Bitset[T]) blockIndex(bitIndex int) int {
-	return (bitIndex - 1) % arch
-}
 
-// zeroize all elements in [start, end)
-// end can be before start
-// 0 <= start < end < len(data)
-func (b *Bitset[T]) zeroize(start, end int) {
-	block := (start%arch + 1) % len(b.data)
-	endBlock := end % arch
-	start %= arch
-	end %= arch
-	if block == endBlock {
-		// they are in same block
-		b.data[block] &= (math.MaxUint << (arch - start)) & (math.MaxUint >> end)
+func (b *Bitset) ShiftLeft(c int) {
+	if c >= b.size {
+		for i := range b.data {
+			b.data[i] = 0
+		}
 		return
 	}
-
-	// left part
-	b.data[block] &= math.MaxUint << (arch - start)
-
-	// right part
-	b.data[block] &= math.MaxUint >> end
-
-	// middle part
-	for ; block < endBlock; block = (block + 1) % len(b.data) {
-		b.data[block] = 0
+	blockShift := c / blockSize
+	for i := 0; i <= len(b.data)-1-blockShift; i++ {
+		b.data[i] = b.data[i+blockShift]
 	}
-}
-func (b *Bitset[T]) zeroiseAll() {
-	for i := range b.data {
+	for i := len(b.data) - blockShift; i < len(b.data); i++ {
 		b.data[i] = 0
 	}
+
+	c %= blockSize
+
+	var carry uint = 0
+	for i := len(b.data)-1; i>= 0; i-- {
+		carry, b.data[i] = b.data[i]>>(blockSize-c), carry|(b.data[i]<<c)
+	}
+
 }
-func (b *Bitset[T]) ShiftLeft(c int) {
+func (b *Bitset) ShiftRight(c int) {
 	if c >= b.size {
-		b.zeroiseAll()
+		for i := range b.data {
+			b.data[i] = 0
+		}
+		return
+	}
+	blockShift := c / blockSize
+	for i := len(b.data) - 1 - blockShift; i >= 0; i-- {
+		b.data[i+blockShift] = b.data[i]
+	}
+	for i := 0; i < blockShift; i++ {
+		b.data[i] = 0
 	}
 
-	start := b.startingBitIndex
-	b.startingBitIndex = b.startingBitIndex % b.size
-	b.zeroize(start, b.startingBitIndex)
-}
-func (b *Bitset[T]) ShiftRight(c int) {
-	if c >= b.size {
-		b.zeroiseAll()
-	}
+	c %= blockSize
 
-	end := b.startingBitIndex
-	b.startingBitIndex -= c
-	if b.startingBitIndex < 0 {
-		b.startingBitIndex += b.size
-	}
-	b.zeroize(b.startingBitIndex, end)
-}
-
-// Assumptions:
-// - 0<c<arch
-func (b *Bitset[T]) realCircularShiftLeft(c int) {
 	var carry uint = 0
 	for i := range b.data {
-		carry, b.data[i] = b.data[i]<<(arch-c), carry|(b.data[i]>>c)
+		carry, b.data[i] = b.data[i]<<(blockSize-c), carry|(b.data[i]>>c)
 	}
-	carry >>= (len(b.data) * arch) - b.size // wasted bits number
-	carry |= b.data[len(b.data)-1] << uint(b.size) % arch
-	b.data[0] |= carry
+	b.data[len(b.data)-1] &= math.MaxUint << (len(b.data)*blockSize - b.size)
 }
 
-// Assumptions:
-// - b.size == other.size
-func (a *Bitset[T]) alignTo(b *Bitset[T]) {
-	aIndex := a.startingBitIndex % a.size
-	bIndex := b.startingBitIndex % a.size
-	if aIndex != bIndex {
-		
+func (b *Bitset) Set(index int, value bool) {
+	elem := &b.data[index/blockSize]
+	index = index % blockSize
+	tmp := uint(1) << (blockSize - index - 1)
+	if value {
+		*elem = *elem | tmp
+	} else {
+		*elem = *elem & ^tmp
 	}
+}
+func (b *Bitset) Get(index int) bool {
+	return b.data[index/blockSize]&(uint(1)<<(blockSize-index%blockSize-1)) != 0
+}
+
+func (b *Bitset) ToSlice() []bool {
+	s := make([]bool, b.size)
+	for i := 0; i < b.size; i++ {
+		s[i] = b.Get(i)
+	}
+	return s
+}
+
+func (b *Bitset) Len() int {
+	return b.size
 }
