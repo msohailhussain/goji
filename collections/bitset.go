@@ -85,6 +85,7 @@ func (b *Bitset) Not(other *Bitset) {
 	for i := range b.data {
 		b.data[i] = ^other.data[i]
 	}
+	b.data[len(b.data)-1] &= math.MaxUint << (len(b.data)*blockSize - b.size)
 }
 func (b *Bitset) AndNot(other *Bitset) {
 	for i := range b.data {
