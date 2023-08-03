@@ -24,3 +24,7 @@ type Complex interface {
 type Ordered interface {
 	Integer | Float | ~string
 }
+
+type Equalized interface {
+	comparable
+}

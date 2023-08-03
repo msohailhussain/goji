@@ -1,4 +1,4 @@
-package heaps
+package heap
 
 type BinaryHeap[T any] struct {
 	s     []T

@@ -1,4 +1,4 @@
-package math
+package polynomial
 
 import (
 	"math"

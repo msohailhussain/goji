@@ -5,6 +5,7 @@ import (
 
 	"github.com/lorenzotinfena/goji/collections"
 	"github.com/lorenzotinfena/goji/sort"
+	"github.com/lorenzotinfena/goji/utils"
 )
 
 // Use this if in SqrtDecompsitionSimple, the mergeQ function is hard, but an expandQ function is easy
@@ -32,7 +33,11 @@ func MoSAlgorithm[E any, Q any](
 			left  uint64
 			right uint64
 			index uint64
-		}]()
+		}](utils.Equalize[struct {
+			left  uint64
+			right uint64
+			index uint64
+		}]())
 	}
 	for i, v := range queries {
 		blocks[v.left/blockSize].InsertLast(struct {
@@ -64,7 +69,11 @@ func MoSAlgorithm[E any, Q any](
 			left  uint64
 			right uint64
 			index uint64
-		}]()
+		}](utils.Equalize[struct {
+			left  uint64
+			right uint64
+			index uint64
+		}]())
 		for _, tmp2 := range tmp {
 			blockSorted[i].Enqueue(tmp2)
 		}

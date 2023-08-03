@@ -1,16 +1,12 @@
 package collections
 
-type Stack[T comparable] struct {
+type Stack[T any] struct {
 	l SingleLinkedList[T]
 }
 
-func NewStack[T comparable]() *Stack[T] {
+func NewStack[T any](equals func(T, T) bool) *Stack[T] {
 	return &Stack[T]{
-		l: SingleLinkedList[T]{
-			first:  nil,
-			last:   nil,
-			length: 0,
-		},
+		l: *NewSingleLinkedList[T](equals),
 	}
 }
 func (s *Stack[T]) Len() int      { return s.l.length }

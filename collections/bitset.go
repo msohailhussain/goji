@@ -122,7 +122,6 @@ func (b *Bitset) ToSlice() []bool {
 	}
 	return s
 }
-
 func (b *Bitset) Len() int {
 	return b.size
 }

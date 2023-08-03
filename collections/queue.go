@@ -1,16 +1,12 @@
 package collections
 
-type Queue[T comparable] struct {
+type Queue[T any] struct {
 	l SingleLinkedList[T]
 }
 
-func NewQueue[T comparable]() *Queue[T] {
+func NewQueue[T any](equals func(T, T) bool) *Queue[T] {
 	return &Queue[T]{
-		l: SingleLinkedList[T]{
-			first:  nil,
-			last:   nil,
-			length: 0,
-		},
+		l: *NewSingleLinkedList[T](equals),
 	}
 }
 func (q *Queue[T]) Len() int        { return q.l.length }

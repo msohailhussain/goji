@@ -6,22 +6,25 @@ import (
 	"github.com/lorenzotinfena/goji/utils"
 )
 
-type singleLinkedListNode[T comparable] struct {
+type singleLinkedListNode[T any] struct {
 	Value T
 	Next  *singleLinkedListNode[T]
 }
 
-type SingleLinkedList[T comparable] struct {
+type SingleLinkedList[T any] struct {
 	first  *singleLinkedListNode[T]
 	last   *singleLinkedListNode[T]
 	length int
+	equals func(T, T) bool
 }
 
-func NewSingleLinkedList[T comparable]() *SingleLinkedList[T] {
+// equals can be nil
+func NewSingleLinkedList[T any](equals func(T, T) bool) *SingleLinkedList[T] {
 	return &SingleLinkedList[T]{
 		first:  nil,
 		last:   nil,
 		length: 0,
+		equals: equals,
 	}
 }
 func (l *SingleLinkedList[T]) Len() int { return l.length }
@@ -88,10 +91,12 @@ func (l *SingleLinkedList[T]) InsertAt(index int, value T) {
 	l.length++
 }
 
+// Assumptions:
+// - equals != nil
 func (l *SingleLinkedList[T]) Contains(value T) bool {
 	tmp := l.first
 	for i := 0; i < l.length; i++ {
-		if tmp.Value == value {
+		if l.equals(tmp.Value, value) {
 			return true
 		}
 		tmp = tmp.Next
@@ -181,7 +186,7 @@ func (l *SingleLinkedList[T]) ToSlice() (res []T) {
 	}
 	return
 }
-func (l *SingleLinkedList[T]) Iterate() utils.Iterator[T] {
+func (l *SingleLinkedList[T]) GetIterator() utils.Iterator[T] {
 	return newSingleLinkedListIterator(l.first)
 }
 
@@ -189,11 +194,11 @@ func (it SingleLinkedList[T]) String() string {
 	return fmt.Sprint(it.ToSlice())
 }
 
-type singleLinkedListIterator[T comparable] struct {
+type singleLinkedListIterator[T any] struct {
 	current *singleLinkedListNode[T]
 }
 
-func newSingleLinkedListIterator[T comparable](current *singleLinkedListNode[T]) utils.Iterator[T] {
+func newSingleLinkedListIterator[T any](current *singleLinkedListNode[T]) utils.Iterator[T] {
 	return &singleLinkedListIterator[T]{
 		current: current,
 	}

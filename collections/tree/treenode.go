@@ -1,4 +1,4 @@
-package trees
+package tree
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/lorenzotinfena/goji/collections"
+	"github.com/lorenzotinfena/goji/utils"
 )
 
 type TreeNode[T any] struct {
@@ -149,7 +150,7 @@ func (root TreeNode[T]) String() string {
 
 	setPaddings(paddings, map[*TreeNode[T]]int{}, 0, &root)
 
-	q := collections.NewQueue[*TreeNode[T]]()
+	q := collections.NewQueue[*TreeNode[T]](utils.Equalize[*TreeNode[T]]())
 	q.Enqueue(&root)
 	linesss := []string{}
 	for q.Len() > 0 {
