@@ -101,6 +101,13 @@ func (b *Bitset) Clone() *Bitset {
 		data: dataCopy,
 	}
 }
+func (b *Bitset) OnesCount() int {
+	c := 0
+	for _, v := range b.data {
+		c += bits.OnesCount(v)
+	}
+	return c
+}
 func (b *Bitset) Set(index int, value bool) {
 	elem := &b.data[index/blockSize]
 	index = index % blockSize
