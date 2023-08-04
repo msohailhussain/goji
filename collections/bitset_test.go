@@ -1,13 +1,14 @@
-package collections
+package collections_test
 
 import (
 	"testing"
 
+	"github.com/lorenzotinfena/goji/collections"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestBitset(t *testing.T) {
-	b := NewBiset(1234)
+	b := collections.NewBiset(1234)
 	// test 1
 	for i := 0; i < b.Len(); i++ {
 		b.Set(i, i%2 == 1)
