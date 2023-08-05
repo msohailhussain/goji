@@ -29,6 +29,7 @@ type SqrtDecomposition[E any, Q any] struct {
 }
 
 // Create a new SqrtDecomposition instance with the parameters as specified by SqrtDecomposition comment
+// Pass nil as update if you never call Update method
 // Assumptions:
 //   - len(elements) > 0
 func NewSqrtDecomposition[E any, Q any](

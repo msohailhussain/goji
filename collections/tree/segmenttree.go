@@ -9,6 +9,9 @@ type SegmentTree[E any, Q any] struct {
 	segments []Q
 }
 
+// Pass nil as update if you never call Update method
+// Assumptions:
+//   - len(elements) > 0
 func NewSegmentTree[E any, Q any](
 	elements []E,
 	query func(element E) Q,
