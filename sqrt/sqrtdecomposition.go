@@ -95,8 +95,8 @@ func (s *SqrtDecomposition[E, Q]) Query(start uint64, end uint64) Q {
 
 // Assumptions:
 //   - index is valid
-func (s *SqrtDecomposition[E, Q]) Update(index uint64, newElement E) {
+func (s *SqrtDecomposition[E, Q]) Update(index uint64, newE E) {
 	i := index / s.blockSize
-	s.blocks[i] = s.updateQ(s.blocks[i], s.elements[index], newElement)
-	s.elements[index] = newElement
+	s.blocks[i] = s.updateQ(s.blocks[i], s.elements[index], newE)
+	s.elements[index] = newE
 }
