@@ -8,12 +8,12 @@ import (
 
 // Query interval
 type query struct {
-	firstIndex uint64
-	lastIndex  uint64
+	firstIndex int
+	lastIndex  int
 }
 
 type update struct {
-	index uint64
+	index int
 	value int
 }
 
