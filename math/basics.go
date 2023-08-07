@@ -1,6 +1,6 @@
 package math
 
-import "golang.org/x/exp/constraints"
+import "github.com/lorenzotinfena/goji/utils/constraints"
 
 func Max[T constraints.Ordered](a, b T) T {
 	if a >= b {

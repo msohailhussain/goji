@@ -1,6 +1,6 @@
 package math
 
-import "golang.org/x/exp/constraints"
+import "github.com/lorenzotinfena/goji/utils/constraints"
 
 // Euclidean algorithm
 // It returns the positive solution

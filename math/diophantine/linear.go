@@ -1,7 +1,7 @@
 package diophantine
 
 import (
-	"golang.org/x/exp/constraints"
+	"github.com/lorenzotinfena/goji/utils/constraints"
 )
 
 // gcd can be negative
