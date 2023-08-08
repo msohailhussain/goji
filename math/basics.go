@@ -2,18 +2,28 @@ package math
 
 import "github.com/lorenzotinfena/goji/utils/constraints"
 
-func Max[T constraints.Ordered](a, b T) T {
-	if a >= b {
-		return a
+// Assumptions:
+// len(elements) > 0
+func Max[T constraints.Ordered](elements ...T) T {
+	m := elements[0]
+	for i := 1; i < len(elements); i++ {
+		if elements[i] > m {
+			m = elements[i]
+		}
 	}
-	return b
+	return m
 }
 
-func Min[T constraints.Ordered](a, b T) T {
-	if a <= b {
-		return a
+// Assumptions:
+// len(elements) > 0
+func Min[T constraints.Ordered](elements ...T) T {
+	m := elements[0]
+	for i := 1; i < len(elements); i++ {
+		if elements[i] < m {
+			m = elements[i]
+		}
 	}
-	return b
+	return m
 }
 
 func Abs[T constraints.Integer | constraints.Float](a T) T {
