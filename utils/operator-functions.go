@@ -15,3 +15,9 @@ func Equalize[T constraints.Equalized]() func(a, b T) bool {
 		return a == b
 	}
 }
+
+func Multiplize[T constraints.Integer | constraints.Float]() func(a, b T) T {
+	return func(a, b T) T {
+		return a * b
+	}
+}
