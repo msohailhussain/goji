@@ -45,6 +45,7 @@ func (g *Graph[T]) AddEdge(source, dest T, weight int) {
 type dfsIterator[T comparable] struct {
 	g       *Graph[T]
 	toVisit collections.Stack[T]
+	visited set.Set[T]
 }
 
 func (it *dfsIterator[T]) HasNext() bool {
@@ -54,7 +55,9 @@ func (it *dfsIterator[T]) Next() T {
 	cur := it.toVisit.Pop()
 	nexts := it.g.E[cur]
 	for _, v := range nexts.ToSlice() {
-		it.toVisit.Push(v.nextVertex)
+		if !it.visited.Contains(v.nextVertex) {
+			it.toVisit.Push(v.nextVertex)
+		}
 	}
 	return cur
 }
@@ -65,12 +68,14 @@ func (g *Graph[T]) IterateDFS(root T) utils.Iterator[T] {
 	return &dfsIterator[T]{
 		g:       g,
 		toVisit: toVisit,
+		visited: *set.NewSet[T](),
 	}
 }
 
 type bfsIterator[T comparable] struct {
 	g       *Graph[T]
 	toVisit collections.Queue[T]
+	visited set.Set[T]
 }
 
 func (it *bfsIterator[T]) HasNext() bool {
@@ -80,7 +85,9 @@ func (it *bfsIterator[T]) Next() T {
 	cur := it.toVisit.Dequeue()
 	nexts := it.g.E[cur]
 	for _, v := range nexts.ToSlice() {
-		it.toVisit.Enqueue(v.nextVertex)
+		if !it.visited.Contains(v.nextVertex) {
+			it.toVisit.Enqueue(v.nextVertex)
+		}
 	}
 	return cur
 }
@@ -91,5 +98,6 @@ func (g *Graph[T]) IterateBFS(root T) utils.Iterator[T] {
 	return &bfsIterator[T]{
 		g:       g,
 		toVisit: toVisit,
+		visited: *set.NewSet[T](),
 	}
 }
