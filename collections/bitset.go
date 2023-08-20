@@ -3,6 +3,8 @@ package collections
 import (
 	"math"
 	"math/bits"
+
+	"github.com/lorenzotinfena/goji/utils"
 )
 
 type Bitset struct {
@@ -10,7 +12,7 @@ type Bitset struct {
 	data []uint
 }
 
-const blockSize = bits.UintSize
+const blockSize = utils.ArchBits
 
 func NewBiset(size int) *Bitset {
 	dim := (size-1)/blockSize + 1
