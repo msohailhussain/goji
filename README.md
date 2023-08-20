@@ -1,6 +1,8 @@
 # Data structures and algorithms Golang library
 ![](goji-image.jpg)
 
+Browser the repo here: https://pkg.go.dev/github.com/lorenzotinfena/goji
+
 ## Coding guidelines
 - When write generic code there are 2 approaches:
     1. OOP: Constraint a type with a method
