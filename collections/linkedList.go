@@ -104,6 +104,17 @@ func (l *SingleLinkedList[T]) Contains(value T) bool {
 	return false
 }
 
+func (l *SingleLinkedList[T]) GetElementEqualsTo(value T) (T, bool) {
+	tmp := l.first
+	for i := 0; i < l.length; i++ {
+		if l.equals(tmp.Value, value) {
+			return tmp.Value, true
+		}
+		tmp = tmp.Next
+	}
+	return value, false
+}
+
 func (l *SingleLinkedList[T]) Clear() {
 	l.first = nil
 	l.last = nil
@@ -175,6 +186,30 @@ func (l *SingleLinkedList[T]) RemoveAt(index int) T {
 	tmp.Next = tmp.Next.Next
 	l.length--
 	return res
+}
+
+func (l *SingleLinkedList[T]) Remove(element T) bool {
+	if l.Len() == 0 {
+		return false
+	}
+
+	if l.equals(l.First(), element) {
+		l.RemoveFirst()
+		return true
+	}
+	if l.equals(l.Last(), element) {
+		l.RemoveLast()
+		return true
+	}
+	tmp := l.first
+	for i := 2; i < l.Len(); i++ {
+		if l.equals(tmp.Next.Value, element) {
+			tmp.Next = tmp.Next.Next
+			return true
+		}
+		tmp = tmp.Next
+	}
+	return false
 }
 
 func (l *SingleLinkedList[T]) ToSlice() (res []T) {
