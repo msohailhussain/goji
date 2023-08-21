@@ -1,6 +1,7 @@
 package trie
 
 import (
+	"fmt"
 	"hash/fnv"
 	"math/bits"
 
@@ -37,24 +38,24 @@ func NewHAMT[K comparable, V any]() *HAMT[K, V] {
 }
 func hash[T any](data T) uint {
 	f := fnv.New64a()
-	f.Write(toByte(data))
+	f.Write([]byte(fmt.Sprintf("%v", data)))
 	return uint(f.Sum64())
 }
 
 var bitsPrefixSum = [...]uint64{0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60}
 
 func (t *HAMT[K, V]) Set(key K, value V) {
+	element := hash(key)
 	if t.length == 0 {
 		keyValues := coll.NewSingleLinkedList[coll.Pair[K, V]](func(a, b coll.Pair[K, V]) bool { return a.First == b.First })
 		keyValues.InsertLast(coll.MakePair(key, value))
-		t.root = &node[K, V]{bitmap: 0, keyValues: *keyValues, next: make([]*node[K, V], 0)}
+		t.root = &node[K, V]{bitmap: 0, hash: element, keyValues: *keyValues, next: make([]*node[K, V], 0)}
+		t.length++
 		return
 	}
 
-	bitsPrefixSum := [...]uint64{0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60}
-
 	n := t.root
-	element := hash(key)
+
 	for i := 0; i < len(bitsPrefixSum); i++ {
 		if n.hash == element {
 			break
