@@ -3,6 +3,26 @@
 
 Browser the repo here: https://pkg.go.dev/github.com/lorenzotinfena/goji
 
+## Showcase
+- Graph
+- Heap
+- Set
+- Segment tree
+- HAMT
+- Bitset
+- LinkedList
+- Queue
+- Stack
+- Tuple
+- DP
+- Diophantine equations
+- Polynomials
+- Binary exponentation
+- GCD and LCM
+- Binary search
+- Selection sort
+- Mo's algorithm
+- Sqrt decomposition
 ## Coding guidelines
 - When write generic code there are 2 approaches:
     1. OOP: Constraint a type with a method
