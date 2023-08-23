@@ -68,6 +68,19 @@ func (l *SingleLinkedList[T]) InsertLast(value T) {
 	l.length++
 }
 
+// merge another ll after the last element
+func (l *SingleLinkedList[T]) MergeEnd(ll *SingleLinkedList[T]) {
+	if l.Len() != 0 {
+		if ll.Len() != 0 {
+			l.length += ll.Len()
+			l.last.Next = ll.first
+			l.last = ll.last
+		}
+	} else {
+		*l = *ll
+	}
+}
+
 // index <= length
 func (l *SingleLinkedList[T]) InsertAt(index int, value T) {
 	if index == 0 {
