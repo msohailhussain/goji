@@ -21,11 +21,6 @@ func BenchmarkLSDRadixSort(b *testing.B) {
 	sort.LSDRadixSort(v, func(a uint) []uint { return []uint{uint(a)} })
 }
 
-func BenchmarkLSDRadixSortNaive(b *testing.B) {
-	v := gen(n)
-	sort.LSDRadixSortNaive(v, func(a uint) []uint { return []uint{uint(a)} })
-}
-
 func BenchmarkMSDRadixSort(b *testing.B) {
 	v := gen(n)
 	sort.MSDRadixSort(v, func(a uint) []uint { return []uint{uint(a)} })

@@ -34,12 +34,6 @@ func TestLSDRadixSort(t *testing.T) {
 	assert.True(t, slices.IsSorted(v))
 }
 
-func TestLSDRadixSortNaive(t *testing.T) {
-	v := gen(100)
-	sort.LSDRadixSortNaive(v, func(a uint) []uint { return []uint{uint(a)} })
-	assert.True(t, slices.IsSorted(v))
-}
-
 func TestMSDRadixSort(t *testing.T) {
 	v := gen(100)
 	sort.MSDRadixSort(v, func(a uint) []uint { return []uint{uint(a)} })
