@@ -7,7 +7,7 @@ import (
 	"github.com/lorenzotinfena/goji/utils/constraints"
 )
 
-func RadixSort[T any, S constraints.Unsigned](v []T, getStructure func(T) []S) {
+func LSDRadixSort[T any, S constraints.Unsigned](v []T, getStructure func(T) []S) {
 	data := make([]*collections.Pair[T, []S], len(v))
 	foo := make([]collections.Pair[T, []S], len(v))
 	for i := range v {
@@ -55,7 +55,7 @@ func RadixSort[T any, S constraints.Unsigned](v []T, getStructure func(T) []S) {
 }
 
 // linked list based approach
-func RadixSortNaive[T any, S constraints.Unsigned](v []T, getStructure func(T) []S) {
+func LSDRadixSortNaive[T any, S constraints.Unsigned](v []T, getStructure func(T) []S) {
 	if len(v) <= 1 {
 		return
 	}

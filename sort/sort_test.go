@@ -27,21 +27,21 @@ func TestStandardSort(t *testing.T) {
 	assert.True(t, slices.IsSorted(v))
 }
 
-func TestRadixSort(t *testing.T) {
+func TestLSDRadixSort(t *testing.T) {
 	v := gen(100)
-	sort.RadixSort(v, func(a uint) []uint { return []uint{uint(a)} })
+	sort.LSDRadixSort(v, func(a uint) []uint { return []uint{uint(a)} })
 	fmt.Printf("v: %v\n", v)
 	assert.True(t, slices.IsSorted(v))
 }
 
-func TestRadixSortNaive(t *testing.T) {
+func TestLSDRadixSortNaive(t *testing.T) {
 	v := gen(100)
-	sort.RadixSortNaive(v, func(a uint) []uint { return []uint{uint(a)} })
+	sort.LSDRadixSortNaive(v, func(a uint) []uint { return []uint{uint(a)} })
 	assert.True(t, slices.IsSorted(v))
 }
 
-func TestInPlaceMSDRadixSort(t *testing.T) {
+func TestMSDRadixSort(t *testing.T) {
 	v := gen(100)
-	sort.InPlaceMSDRadixSort(v, func(a uint) []uint { return []uint{uint(a)} })
+	sort.MSDRadixSort(v, func(a uint) []uint { return []uint{uint(a)} })
 	assert.True(t, slices.IsSorted(v))
 }

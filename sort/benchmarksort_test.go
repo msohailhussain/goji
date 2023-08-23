@@ -7,7 +7,7 @@ import (
 	"github.com/lorenzotinfena/goji/sort"
 )
 
-const n = 100000
+const n = 4000000
 
 func BenchmarkStandardSort(b *testing.B) {
 	v := gen(n)
@@ -16,17 +16,17 @@ func BenchmarkStandardSort(b *testing.B) {
 	})
 }
 
-func BenchmarkRadixSort(b *testing.B) {
+func BenchmarkLSDRadixSort(b *testing.B) {
 	v := gen(n)
-	sort.RadixSort(v, func(a uint) []uint { return []uint{uint(a)} })
+	sort.LSDRadixSort(v, func(a uint) []uint { return []uint{uint(a)} })
 }
 
-func BenchmarkRadixSortNaive(b *testing.B) {
+func BenchmarkLSDRadixSortNaive(b *testing.B) {
 	v := gen(n)
-	sort.RadixSortNaive(v, func(a uint) []uint { return []uint{uint(a)} })
+	sort.LSDRadixSortNaive(v, func(a uint) []uint { return []uint{uint(a)} })
 }
 
-func BenchmarkInPlaceMSDRadixSort(b *testing.B) {
+func BenchmarkMSDRadixSort(b *testing.B) {
 	v := gen(n)
-	sort.InPlaceMSDRadixSort(v, func(a uint) []uint { return []uint{uint(a)} })
+	sort.MSDRadixSort(v, func(a uint) []uint { return []uint{uint(a)} })
 }
