@@ -22,8 +22,6 @@ func Insert[T []E, E any](sli T, index int, element E) T {
 
 func Clone[T any](v []T) []T {
 	v1 := make([]T, len(v))
-	for i := range v {
-		v1[i] = v[i]
-	}
+	copy(v1, v)
 	return v1
 }
