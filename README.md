@@ -23,6 +23,7 @@ Browser the repo here: https://pkg.go.dev/github.com/lorenzotinfena/goji
 - Selection sort
 - Mo's algorithm
 - Sqrt decomposition
+- Radix sort (LSD and MSD)
 ## Coding guidelines
 - When write generic code there are 2 approaches:
     1. OOP: Constraint a type with a method
