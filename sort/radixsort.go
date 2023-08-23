@@ -34,7 +34,7 @@ func RadixSort[T any, S constraints.Unsigned](v []T, getStructure func(T) []S) {
 					one++
 				}
 			}
-			
+
 			one += zero
 
 			for i := len(data) - 1; i >= 0; i-- {
