@@ -103,3 +103,26 @@ func (t *HAMT[K, V]) Get(key K) (V, bool) {
 	return pair.Second, present
 
 }
+
+func (t *HAMT[K, V]) Len() int {
+	return t.length
+}
+
+func (t *HAMT[K, V]) Keys() []K {
+	res := make([]K, t.Len())
+	i := 0
+	var visit func(n *node[K, V])
+	visit = func(n *node[K, V]) {
+		for _, el := range n.keyValues.ToSlice() {
+			res[i] = el.First
+			i++
+		}
+		for _, el := range n.next {
+			visit(el)
+		}
+	}
+	if t.root != nil {
+		visit(t.root)
+	}
+	return res
+}

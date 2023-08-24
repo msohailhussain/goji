@@ -1,47 +1,59 @@
+// dir graph, undir graph, weighted, unweighted
 package graph
 
 import (
-	"github.com/lorenzotinfena/goji/collections"
-	"github.com/lorenzotinfena/goji/collections/set"
-	"github.com/lorenzotinfena/goji/utils"
+	cl "github.com/lorenzotinfena/goji/collections"
 	"github.com/lorenzotinfena/goji/utils/constraints"
 )
 
-type edge[T any] struct {
-	nextVertex T
-	weight     int
+type unitGraph[V constraints.Equalized] struct {
+	Edges map[V]cl.Set[V]
 }
 
-func makeEdge[T any](nextVertex T, weight int) edge[T] {
-	return edge[T]{
-		nextVertex: nextVertex,
-		weight:     weight,
+type weightedGraph[V constraints.Equalized, W constraints.Integer | constraints.Integer] struct {
+	Edges map[V]cl.Set[cl.Pair[V, W]]
+}
+
+func NewUnitGraph[V constraints.Equalized]() *unitGraph[V] {
+	return &unitGraph[V]{
+		Edges: make(map[V]cl.Set[V]),
+	}
+}
+func NewWeightedGraph[V constraints.Equalized, W constraints.Integer | constraints.Integer]() *weightedGraph[V, W] {
+	return &weightedGraph[V, W]{
+		Edges: make(map[V]cl.Set[cl.Pair[V, W]]),
 	}
 }
 
-// Weighted directed graph
-type Graph[T constraints.Equalized] struct {
-	V set.Set[T]
-	E map[T]set.Set[edge[T]]
+func (g *unitGraph[V]) AddVertex(v V) {
+	_, present := g.Edges[v]
+	if !present {
+		g.Edges[v] = *cl.NewSet[V]()
+	}
 }
-
-func NewGraph[T constraints.Equalized]() *Graph[T] {
-	return &Graph[T]{
-		V: *set.NewSet[T](),
-		E: make(map[T]set.Set[edge[T]]),
+func (g *weightedGraph[V, W]) AddVertex(v V) {
+	_, present := g.Edges[v]
+	if !present {
+		g.Edges[v] = *cl.NewSet[cl.Pair[V, W]]()
 	}
 }
 
-func (g *Graph[T]) AddVertex(item T) {
-	g.V.Add(item)
-	g.E[item] = *set.NewSet[edge[T]]()
+// Assumptions:
+// - source vertex exist
+func (g *weightedGraph[V, W]) AddEdge(source, dest V, weight W) {
+	e := g.Edges[source]
+	e.Add(cl.MakePair(dest, weight))
 }
 
-func (g *Graph[T]) AddEdge(source, dest T, weight int) {
-	e := g.E[source]
-	e.Add(makeEdge(dest, weight))
+// Assumptions:
+// - source vertex exist
+func (g *unitGraph[V]) AddEdge(source, dest V) {
+	e := g.Edges[source]
+	e.Add(dest)
 }
 
+// TODO:
+/*
 type dfsIterator[T comparable] struct {
 	g       *Graph[T]
 	toVisit collections.Stack[T]
@@ -100,4 +112,4 @@ func (g *Graph[T]) IterateBFS(root T) utils.Iterator[T] {
 		toVisit: toVisit,
 		visited: *set.NewSet[T](),
 	}
-}
+}*/
