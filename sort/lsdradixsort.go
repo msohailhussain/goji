@@ -7,7 +7,13 @@ import (
 	"github.com/lorenzotinfena/goji/utils/constraints"
 )
 
+// Assumptions:
+// - getStructure always returns slices of same length
 func LSDRadixSort[T any, S constraints.Unsigned](v []T, getStructure func(T) []S) {
+	if len(v) <= 1 {
+		return
+	}
+
 	data := make([]*collections.Pair[T, []S], len(v))
 	foo := make([]collections.Pair[T, []S], len(v))
 	for i := range v {

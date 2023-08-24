@@ -37,7 +37,13 @@ func ReverseRadixSort(v []int) {
 	rec(63, 0, len(v)-1)
 }
 */
+// Assumptions:
+// - getStructure always returns slices of same length
 func MSDRadixSort[T any, S constraints.Unsigned](v []T, getStructure func(T) []S) {
+	if len(v) <= 1 {
+		return
+	}
+
 	data := make([]*collections.Pair[T, []S], len(v))
 	foo := make([]collections.Pair[T, []S], len(v))
 	for i := range v {
