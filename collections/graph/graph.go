@@ -10,7 +10,7 @@ type unitGraph[V constraints.Equalized] struct {
 	Edges map[V]cl.Set[V]
 }
 
-type weightedGraph[V constraints.Equalized, W constraints.Integer | constraints.Integer] struct {
+type weightedGraph[V constraints.Equalized, W constraints.Integer | constraints.Float] struct {
 	Edges map[V]cl.Set[cl.Pair[V, W]]
 }
 
@@ -19,7 +19,7 @@ func NewUnitGraph[V constraints.Equalized]() *unitGraph[V] {
 		Edges: make(map[V]cl.Set[V]),
 	}
 }
-func NewWeightedGraph[V constraints.Equalized, W constraints.Integer | constraints.Integer]() *weightedGraph[V, W] {
+func NewWeightedGraph[V constraints.Equalized, W constraints.Integer | constraints.Float]() *weightedGraph[V, W] {
 	return &weightedGraph[V, W]{
 		Edges: make(map[V]cl.Set[cl.Pair[V, W]]),
 	}
