@@ -25,3 +25,11 @@ func Clone[T any](v []T) []T {
 	copy(v1, v)
 	return v1
 }
+
+func Map[Dom any, Codom any](v []Dom, f func(Dom) Codom) []Codom {
+	mapped := make([]Codom, len(v))
+	for i, x := range v {
+		mapped[i] = f(x)
+	}
+	return mapped
+}

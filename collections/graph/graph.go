@@ -3,7 +3,9 @@ package graph
 
 import (
 	cl "github.com/lorenzotinfena/goji/collections"
+	"github.com/lorenzotinfena/goji/utils"
 	"github.com/lorenzotinfena/goji/utils/constraints"
+	"github.com/lorenzotinfena/goji/utils/slices"
 )
 
 type unitGraph[V constraints.Equalized] struct {
@@ -19,6 +21,7 @@ func NewUnitGraph[V constraints.Equalized]() *unitGraph[V] {
 		Edges: make(map[V]cl.Set[V]),
 	}
 }
+
 func NewWeightedGraph[V constraints.Equalized, W constraints.Integer | constraints.Float]() *weightedGraph[V, W] {
 	return &weightedGraph[V, W]{
 		Edges: make(map[V]cl.Set[cl.Pair[V, W]]),
@@ -31,11 +34,19 @@ func (g *unitGraph[V]) AddVertex(v V) {
 		g.Edges[v] = *cl.NewSet[V]()
 	}
 }
+
 func (g *weightedGraph[V, W]) AddVertex(v V) {
 	_, present := g.Edges[v]
 	if !present {
 		g.Edges[v] = *cl.NewSet[cl.Pair[V, W]]()
 	}
+}
+
+// Assumptions:
+// - source vertex exist
+func (g *unitGraph[V]) AddEdge(source, dest V) {
+	e := g.Edges[source]
+	e.Add(dest)
 }
 
 // Assumptions:
@@ -47,69 +58,28 @@ func (g *weightedGraph[V, W]) AddEdge(source, dest V, weight W) {
 
 // Assumptions:
 // - source vertex exist
-func (g *unitGraph[V]) AddEdge(source, dest V) {
-	e := g.Edges[source]
-	e.Add(dest)
+func (g unitGraph[V]) getAdjacents(v V) []V {
+	return g.Edges[v].ToSlice()
 }
 
-// TODO:
-/*
-type dfsIterator[T comparable] struct {
-	g       *Graph[T]
-	toVisit collections.Stack[T]
-	visited set.Set[T]
+// Assumptions:
+// - source vertex exist
+func (g weightedGraph[V, W]) getAdjacents(v V) []V {
+	return slices.Map(g.Edges[v].ToSlice(), func(p cl.Pair[V, W]) V { return p.First })
 }
 
-func (it *dfsIterator[T]) HasNext() bool {
-	return it.toVisit.Len() != 0
-}
-func (it *dfsIterator[T]) Next() T {
-	cur := it.toVisit.Pop()
-	nexts := it.g.E[cur]
-	for _, v := range nexts.ToSlice() {
-		if !it.visited.Contains(v.nextVertex) {
-			it.toVisit.Push(v.nextVertex)
-		}
-	}
-	return cur
-}
-func (g *Graph[T]) IterateDFS(root T) utils.Iterator[T] {
-	toVisit := *collections.NewStack[T](nil)
-	toVisit.Push(root)
-
-	return &dfsIterator[T]{
-		g:       g,
-		toVisit: toVisit,
-		visited: *set.NewSet[T](),
-	}
+func (g *unitGraph[V]) GetIteratorDFS(root V) utils.Iterator[V] {
+	return cl.NewIteratorDFS[V](root, func(v V) []V { return g.getAdjacents(v) })
 }
 
-type bfsIterator[T comparable] struct {
-	g       *Graph[T]
-	toVisit collections.Queue[T]
-	visited set.Set[T]
+func (g *weightedGraph[V, _]) GetIteratorDFS(root V) utils.Iterator[V] {
+	return cl.NewIteratorDFS[V](root, func(v V) []V { return g.getAdjacents(v) })
 }
 
-func (it *bfsIterator[T]) HasNext() bool {
-	return it.toVisit.Len() != 0
+func (g *unitGraph[V]) GetIteratorBFS(root V) utils.Iterator[V] {
+	return cl.NewIteratorBFS[V](root, func(v V) []V { return g.getAdjacents(v) })
 }
-func (it *bfsIterator[T]) Next() T {
-	cur := it.toVisit.Dequeue()
-	nexts := it.g.E[cur]
-	for _, v := range nexts.ToSlice() {
-		if !it.visited.Contains(v.nextVertex) {
-			it.toVisit.Enqueue(v.nextVertex)
-		}
-	}
-	return cur
-}
-func (g *Graph[T]) IterateBFS(root T) utils.Iterator[T] {
-	toVisit := *collections.NewQueue[T](nil)
-	toVisit.Enqueue(root)
 
-	return &bfsIterator[T]{
-		g:       g,
-		toVisit: toVisit,
-		visited: *set.NewSet[T](),
-	}
-}*/
+func (g *weightedGraph[V, _]) GetIteratorBFS(root V) utils.Iterator[V] {
+	return cl.NewIteratorBFS[V](root, func(v V) []V { return g.getAdjacents(v) })
+}

@@ -18,16 +18,17 @@ func (s *Set[T]) Add(element T) {
 		s.m[element] = struct{}{}
 	}
 }
+
 func (s *Set[T]) Remove(element T) {
 	delete(s.m, element)
 }
 
-func (s *Set[T]) Contains(element T) bool {
+func (s Set[T]) Contains(element T) bool {
 	_, exist := s.m[element]
 	return exist
 }
 
-func (s *Set[T]) ToSlice() []T {
+func (s Set[T]) ToSlice() []T {
 	keys := make([]T, 0, len(s.m))
 	for k := range s.m {
 		keys = append(keys, k)
@@ -35,6 +36,6 @@ func (s *Set[T]) ToSlice() []T {
 	return keys
 }
 
-func (s *Set[T]) Log() string {
+func (s Set[T]) Log() string {
 	return fmt.Sprint(s.ToSlice())
 }
