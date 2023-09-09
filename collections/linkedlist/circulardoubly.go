@@ -52,28 +52,57 @@ func (l *CircularDoublyLinkedList[T]) InsertLast(value T) {
 
 // merge another ll after the last element
 func (l *CircularDoublyLinkedList[T]) MergeEnd(ll *CircularDoublyLinkedList[T]) {
+	if ll.Len() == 0 {
+		return
+	}
+	l.length += ll.Len()
 	if l.Len() == 0 {
 		*l = *ll
 		return
 	}
-	if ll.Len() == 0 {
-		return
-	}
+
 	l.first.Prev.Next = ll.first
 	ll.first.Prev.Next = l.first
 	l.first.Prev, ll.first.Prev = ll.first.Prev, l.first.Prev
 }
 
-/* TODO
 // index <= length
 func (l *CircularDoublyLinkedList[T]) InsertAt(index int, value T) {
+	if index == 0 {
+		l.InsertFirst(value)
+		return
+	}
+
+	var node *circularDoublyLinkedListNode[T]
+	if index <= l.Len()/2 {
+		node = l.first
+		for index > 1 {
+			node = node.Next
+			index--
+		}
+	} else {
+		node = l.first.Prev
+		for index < l.Len() {
+			node = node.Prev
+			index++
+		}
+	}
+
+	toAdd := &circularDoublyLinkedListNode[T]{
+		Value: value,
+		Prev:  node,
+		Next:  node.Next,
+	}
+	node.Next.Prev = toAdd
+	node.Next = toAdd
+	l.length++
 }
 
 // Assumptions:
 // - equals != nil
 func (l *CircularDoublyLinkedList[T]) Contains(value T) bool {
 	tmp := l.first
-	for i := 0; i < l.length; i++ {
+	for i := 0; i < l.Len(); i++ {
 		if l.equals(tmp.Value, value) {
 			return true
 		}
@@ -84,7 +113,7 @@ func (l *CircularDoublyLinkedList[T]) Contains(value T) bool {
 
 func (l *CircularDoublyLinkedList[T]) GetElementEqualsTo(value T) (T, bool) {
 	tmp := l.first
-	for i := 0; i < l.length; i++ {
+	for i := 0; i < l.Len(); i++ {
 		if l.equals(tmp.Value, value) {
 			return tmp.Value, true
 		}
@@ -95,7 +124,6 @@ func (l *CircularDoublyLinkedList[T]) GetElementEqualsTo(value T) (T, bool) {
 
 func (l *CircularDoublyLinkedList[T]) Clear() {
 	l.first = nil
-	l.last = nil
 	l.length = 0
 }
 
@@ -111,41 +139,49 @@ func (l *CircularDoublyLinkedList[T]) GetElementAt(index int) T {
 
 // index < length
 func (l *CircularDoublyLinkedList[T]) SetElementAt(index int, value T) {
-	n := l.first
-	for index > 0 {
-		n = n.Next
-		index--
+	var node *circularDoublyLinkedListNode[T]
+	if index <= l.Len()/2 {
+		node = l.first
+		for index > 0 {
+			node = node.Next
+			index--
+		}
+	} else {
+		node = l.first.Prev
+		for index < l.Len() {
+			node = node.Prev
+			index++
+		}
 	}
-	n.Value = value
+	node.Value = value
 }
 
 func (l *CircularDoublyLinkedList[T]) RemoveFirst() T {
-	tmp := l.first
-	l.first = l.first.Next
-	l.length--
-	if l.first == nil {
-		l.last = nil
+	value := l.first.Value
+	if l.Len() == 1 {
+		l.first = nil
+	} else {
+		l.first.Prev.Next = l.first.Next
+		l.first.Next.Prev = l.first.Prev
 	}
-	return tmp.Value
+	l.length--
+	return value
 }
 
 func (l *CircularDoublyLinkedList[T]) RemoveLast() (value T) {
-	value = l.last.Value
-	if l.length == 1 {
+	value = l.first.Prev.Value
+	if l.Len() == 1 {
 		l.first = nil
-		l.last = nil
-		l.length = 0
-		return
-	}
+	} else {
 
-	tmp := l.first
-	for i := 2; i < l.length; i++ {
-		tmp = tmp.Next
+		l.first.Prev.Prev.Next = l.first
+		l.first.Prev = l.first.Prev.Prev
 	}
-	l.last = tmp
 	l.length--
 	return
 }
+
+/* TODO
 
 // index < length
 func (l *CircularDoublyLinkedList[T]) RemoveAt(index int) T {
