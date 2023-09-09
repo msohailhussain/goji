@@ -4,6 +4,7 @@ import (
 	"math"
 
 	"github.com/lorenzotinfena/goji/collections"
+	ll "github.com/lorenzotinfena/goji/collections/linkedlist"
 	"github.com/lorenzotinfena/goji/sort"
 	"github.com/lorenzotinfena/goji/utils"
 )
@@ -23,13 +24,13 @@ func MoSAlgorithm[E any, Q any](
 	res = make([]Q, len(queries))
 	sqrt := math.Sqrt(float64(len(elements)))
 	blockSize := uint64(sqrt)
-	blocks := make([]*collections.SingleLinkedList[struct {
+	blocks := make([]*ll.SinglyLinkedList[struct {
 		left  uint64
 		right uint64
 		index uint64
 	}], uint64(math.Ceil(float64(len(elements))/float64(blockSize))))
 	for i := range blocks {
-		blocks[i] = collections.NewSingleLinkedList[struct {
+		blocks[i] = ll.NewSinglyLinkedList[struct {
 			left  uint64
 			right uint64
 			index uint64

@@ -5,6 +5,7 @@ import (
 	"hash/fnv"
 	"math/bits"
 
+	ll "github.com/lorenzotinfena/goji/collections/linkedlist"
 	coll "github.com/lorenzotinfena/goji/collections"
 	"github.com/lorenzotinfena/goji/utils/slices"
 )
@@ -19,7 +20,7 @@ import (
 type node[K comparable, V any] struct {
 	bitmap    uint
 	hash      uint
-	keyValues coll.SingleLinkedList[coll.Pair[K, V]]
+	keyValues ll.SinglyLinkedList[coll.Pair[K, V]]
 	next      []*node[K, V]
 }
 
@@ -36,6 +37,7 @@ func NewHAMT[K comparable, V any]() *HAMT[K, V] {
 		length: 0,
 	}
 }
+
 func hash[T any](data T) uint {
 	f := fnv.New64a()
 	f.Write([]byte(fmt.Sprintf("%v", data)))
@@ -47,7 +49,7 @@ var bitsPrefixSum = [...]uint64{0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60
 func (t *HAMT[K, V]) Set(key K, value V) {
 	element := hash(key)
 	if t.length == 0 {
-		keyValues := coll.NewSingleLinkedList[coll.Pair[K, V]](func(a, b coll.Pair[K, V]) bool { return a.First == b.First })
+		keyValues := ll.NewSinglyLinkedList[coll.Pair[K, V]](func(a, b coll.Pair[K, V]) bool { return a.First == b.First })
 		keyValues.InsertLast(coll.MakePair(key, value))
 		t.root = &node[K, V]{bitmap: 0, hash: element, keyValues: *keyValues, next: make([]*node[K, V], 0)}
 		t.length++
@@ -64,7 +66,7 @@ func (t *HAMT[K, V]) Set(key K, value V) {
 		if n.bitmap&(1<<data) != 0 {
 			n = n.next[bits.OnesCount64(uint64(n.bitmap<<(64-data)))]
 		} else {
-			keyValues := coll.NewSingleLinkedList[coll.Pair[K, V]](func(a, b coll.Pair[K, V]) bool { return a.First == b.First })
+			keyValues := ll.NewSinglyLinkedList[coll.Pair[K, V]](func(a, b coll.Pair[K, V]) bool { return a.First == b.First })
 			keyValues.InsertLast(coll.MakePair(key, value))
 			next := &node[K, V]{bitmap: 0, hash: element, keyValues: *keyValues, next: make([]*node[K, V], 0)}
 			pos := bits.OnesCount64(uint64(n.bitmap << (63 - data)))
@@ -101,7 +103,6 @@ func (t *HAMT[K, V]) Get(key K) (V, bool) {
 	var foo V
 	pair, present := n.keyValues.GetElementEqualsTo(coll.MakePair(key, foo))
 	return pair.Second, present
-
 }
 
 func (t *HAMT[K, V]) Len() int {

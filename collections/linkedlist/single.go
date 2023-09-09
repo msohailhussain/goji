@@ -6,43 +6,43 @@ import (
 	"github.com/lorenzotinfena/goji/utils"
 )
 
-type singleLinkedListNode[T any] struct {
+type singlyLinkedListNode[T any] struct {
 	Value T
-	Next  *singleLinkedListNode[T]
+	Next  *singlyLinkedListNode[T]
 }
 
-type SingleLinkedList[T any] struct {
-	first  *singleLinkedListNode[T]
-	last   *singleLinkedListNode[T]
+type SinglyLinkedList[T any] struct {
+	first  *singlyLinkedListNode[T]
+	last   *singlyLinkedListNode[T]
 	length int
 	equals func(T, T) bool
 }
 
 // equals can be nil
-func NewSingleLinkedList[T any](equals func(T, T) bool) *SingleLinkedList[T] {
-	return &SingleLinkedList[T]{
+func NewSinglyLinkedList[T any](equals func(T, T) bool) *SinglyLinkedList[T] {
+	return &SinglyLinkedList[T]{
 		first:  nil,
 		last:   nil,
 		length: 0,
 		equals: equals,
 	}
 }
-func (l *SingleLinkedList[T]) Len() int { return l.length }
+func (l *SinglyLinkedList[T]) Len() int { return l.length }
 
-func (l *SingleLinkedList[T]) First() T { return l.first.Value }
+func (l *SinglyLinkedList[T]) First() T { return l.first.Value }
 
-func (l *SingleLinkedList[T]) Last() T { return l.last.Value }
+func (l *SinglyLinkedList[T]) Last() T { return l.last.Value }
 
-func (l *SingleLinkedList[T]) InsertFirst(value T) {
+func (l *SinglyLinkedList[T]) InsertFirst(value T) {
 	if l.length == 0 {
-		nodeToInsert := &singleLinkedListNode[T]{
+		nodeToInsert := &singlyLinkedListNode[T]{
 			Value: value,
 			Next:  l.first,
 		}
 		l.first = nodeToInsert
 		l.last = nodeToInsert
 	} else {
-		l.first = &singleLinkedListNode[T]{
+		l.first = &singlyLinkedListNode[T]{
 			Value: value,
 			Next:  l.first,
 		}
@@ -50,16 +50,16 @@ func (l *SingleLinkedList[T]) InsertFirst(value T) {
 	l.length++
 }
 
-func (l *SingleLinkedList[T]) InsertLast(value T) {
+func (l *SinglyLinkedList[T]) InsertLast(value T) {
 	if l.length == 0 {
-		nodeToInsert := &singleLinkedListNode[T]{
+		nodeToInsert := &singlyLinkedListNode[T]{
 			Value: value,
 			Next:  l.first,
 		}
 		l.first = nodeToInsert
 		l.last = nodeToInsert
 	} else {
-		l.last.Next = &singleLinkedListNode[T]{
+		l.last.Next = &singlyLinkedListNode[T]{
 			Value: value,
 			Next:  nil,
 		}
@@ -69,7 +69,7 @@ func (l *SingleLinkedList[T]) InsertLast(value T) {
 }
 
 // merge another ll after the last element
-func (l *SingleLinkedList[T]) MergeEnd(ll *SingleLinkedList[T]) {
+func (l *SinglyLinkedList[T]) MergeEnd(ll *SinglyLinkedList[T]) {
 	if l.Len() != 0 {
 		if ll.Len() != 0 {
 			l.length += ll.Len()
@@ -82,7 +82,7 @@ func (l *SingleLinkedList[T]) MergeEnd(ll *SingleLinkedList[T]) {
 }
 
 // index <= length
-func (l *SingleLinkedList[T]) InsertAt(index int, value T) {
+func (l *SinglyLinkedList[T]) InsertAt(index int, value T) {
 	if index == 0 {
 		l.InsertFirst(value)
 		return
@@ -97,7 +97,7 @@ func (l *SingleLinkedList[T]) InsertAt(index int, value T) {
 		n = n.Next
 		index--
 	}
-	n.Next = &singleLinkedListNode[T]{
+	n.Next = &singlyLinkedListNode[T]{
 		Value: value,
 		Next:  n.Next,
 	}
@@ -106,7 +106,7 @@ func (l *SingleLinkedList[T]) InsertAt(index int, value T) {
 
 // Assumptions:
 // - equals != nil
-func (l *SingleLinkedList[T]) Contains(value T) bool {
+func (l *SinglyLinkedList[T]) Contains(value T) bool {
 	tmp := l.first
 	for i := 0; i < l.length; i++ {
 		if l.equals(tmp.Value, value) {
@@ -117,7 +117,7 @@ func (l *SingleLinkedList[T]) Contains(value T) bool {
 	return false
 }
 
-func (l *SingleLinkedList[T]) GetElementEqualsTo(value T) (T, bool) {
+func (l *SinglyLinkedList[T]) GetElementEqualsTo(value T) (T, bool) {
 	tmp := l.first
 	for i := 0; i < l.length; i++ {
 		if l.equals(tmp.Value, value) {
@@ -128,14 +128,14 @@ func (l *SingleLinkedList[T]) GetElementEqualsTo(value T) (T, bool) {
 	return value, false
 }
 
-func (l *SingleLinkedList[T]) Clear() {
+func (l *SinglyLinkedList[T]) Clear() {
 	l.first = nil
 	l.last = nil
 	l.length = 0
 }
 
 // index < length
-func (l *SingleLinkedList[T]) GetElementAt(index int) T {
+func (l *SinglyLinkedList[T]) GetElementAt(index int) T {
 	n := l.first
 	for index > 0 {
 		n = n.Next
@@ -145,7 +145,7 @@ func (l *SingleLinkedList[T]) GetElementAt(index int) T {
 }
 
 // index < length
-func (l *SingleLinkedList[T]) SetElementAt(index int, value T) {
+func (l *SinglyLinkedList[T]) SetElementAt(index int, value T) {
 	n := l.first
 	for index > 0 {
 		n = n.Next
@@ -154,7 +154,7 @@ func (l *SingleLinkedList[T]) SetElementAt(index int, value T) {
 	n.Value = value
 }
 
-func (l *SingleLinkedList[T]) RemoveFirst() T {
+func (l *SinglyLinkedList[T]) RemoveFirst() T {
 	tmp := l.first
 	l.first = l.first.Next
 	l.length--
@@ -164,7 +164,7 @@ func (l *SingleLinkedList[T]) RemoveFirst() T {
 	return tmp.Value
 }
 
-func (l *SingleLinkedList[T]) RemoveLast() (value T) {
+func (l *SinglyLinkedList[T]) RemoveLast() (value T) {
 	value = l.last.Value
 	if l.length == 1 {
 		l.first = nil
@@ -183,7 +183,7 @@ func (l *SingleLinkedList[T]) RemoveLast() (value T) {
 }
 
 // index < length
-func (l *SingleLinkedList[T]) RemoveAt(index int) T {
+func (l *SinglyLinkedList[T]) RemoveAt(index int) T {
 	if index == 0 {
 		return l.RemoveFirst()
 	}
@@ -201,7 +201,7 @@ func (l *SingleLinkedList[T]) RemoveAt(index int) T {
 	return res
 }
 
-func (l *SingleLinkedList[T]) Remove(element T) bool {
+func (l *SinglyLinkedList[T]) Remove(element T) bool {
 	if l.Len() == 0 {
 		return false
 	}
@@ -225,7 +225,7 @@ func (l *SingleLinkedList[T]) Remove(element T) bool {
 	return false
 }
 
-func (l *SingleLinkedList[T]) ToSlice() (res []T) {
+func (l *SinglyLinkedList[T]) ToSlice() (res []T) {
 	res = make([]T, 0, l.length)
 	tmp := l.first
 	for i := 0; i < l.length; i++ {
@@ -234,19 +234,20 @@ func (l *SingleLinkedList[T]) ToSlice() (res []T) {
 	}
 	return
 }
-func (l *SingleLinkedList[T]) GetIterator() utils.Iterator[T] {
+
+func (l *SinglyLinkedList[T]) GetIterator() utils.Iterator[T] {
 	return newSingleLinkedListIterator(l.first)
 }
 
-func (it SingleLinkedList[T]) String() string {
+func (it SinglyLinkedList[T]) String() string {
 	return fmt.Sprint(it.ToSlice())
 }
 
 type singleLinkedListIterator[T any] struct {
-	current *singleLinkedListNode[T]
+	current *singlyLinkedListNode[T]
 }
 
-func newSingleLinkedListIterator[T any](current *singleLinkedListNode[T]) utils.Iterator[T] {
+func newSingleLinkedListIterator[T any](current *singlyLinkedListNode[T]) utils.Iterator[T] {
 	return &singleLinkedListIterator[T]{
 		current: current,
 	}
