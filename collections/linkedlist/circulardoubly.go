@@ -1,5 +1,11 @@
 package collections
 
+import (
+	"fmt"
+
+	"github.com/lorenzotinfena/goji/utils"
+)
+
 type circularDoublyLinkedListNode[T any] struct {
 	Value      T
 	Prev, Next *circularDoublyLinkedListNode[T]
@@ -147,7 +153,7 @@ func (l *CircularDoublyLinkedList[T]) SetElementAt(index int, value T) {
 			index--
 		}
 	} else {
-		node = l.first.Prev
+		node = l.first
 		for index < l.Len() {
 			node = node.Prev
 			index++
@@ -181,44 +187,44 @@ func (l *CircularDoublyLinkedList[T]) RemoveLast() (value T) {
 	return
 }
 
-/* TODO
-
 // index < length
 func (l *CircularDoublyLinkedList[T]) RemoveAt(index int) T {
 	if index == 0 {
 		return l.RemoveFirst()
 	}
-	if index == l.length-1 {
-		return l.RemoveLast()
+	var node *circularDoublyLinkedListNode[T]
+	if index <= l.Len()/2 {
+		node = l.first
+		for index > 0 {
+			node = node.Next
+			index--
+		}
+	} else {
+		node = l.first
+		for index < l.Len() {
+			node = node.Prev
+			index++
+		}
 	}
-
-	tmp := l.first
-	for i := 1; i < index; i++ {
-		tmp = tmp.Next
-	}
-	res := tmp.Next.Value
-	tmp.Next = tmp.Next.Next
 	l.length--
-	return res
+	node.Next = node.Prev
+	node.Prev.Next = node.Next
+	return node.Value
 }
+
 
 func (l *CircularDoublyLinkedList[T]) Remove(element T) bool {
 	if l.Len() == 0 {
 		return false
 	}
-
-	if l.equals(l.First(), element) {
+	if l.equals(l.first.Value, element) {
 		l.RemoveFirst()
 		return true
 	}
-	if l.equals(l.Last(), element) {
-		l.RemoveLast()
-		return true
-	}
-	tmp := l.first
-	for i := 2; i < l.Len(); i++ {
-		if l.equals(tmp.Next.Value, element) {
-			tmp.Next = tmp.Next.Next
+	tmp := l.first.Next
+	for i := 1; i < l.Len(); i++ {
+		if l.equals(tmp.Value, element) {
+			l.length--
 			return true
 		}
 		tmp = tmp.Next
@@ -226,41 +232,40 @@ func (l *CircularDoublyLinkedList[T]) Remove(element T) bool {
 	return false
 }
 
-func (l *CircularDoublyLinkedList[T]) ToSlice() (res []T) {
-	res = make([]T, 0, l.length)
+func (l *CircularDoublyLinkedList[T]) ToSlice() []T {
+	res := make([]T, l.length)
 	tmp := l.first
 	for i := 0; i < l.length; i++ {
-		res = append(res, tmp.Value)
+		res[i] = tmp.Value
 		tmp = tmp.Next
 	}
-	return
+	return res
 }
 
+
 func (l *SinglyLinkedList[T]) GetIterator() utils.Iterator[T] {
-	return newSingleLinkedListIterator(l.first)
+	return &circularDoublyLinkedListIterator[T]{
+		current: l.first,
+		remaining: l.Len(),
+	}
 }
 
 func (it SinglyLinkedList[T]) String() string {
 	return fmt.Sprint(it.ToSlice())
 }
 
-type singleLinkedListIterator[T any] struct {
+type circularDoublyLinkedListIterator[T any] struct {
 	current *singlyLinkedListNode[T]
-}
-
-func newSingleLinkedListIterator[T any](current *singlyLinkedListNode[T]) utils.Iterator[T] {
-	return &singleLinkedListIterator[T]{
-		current: current,
-	}
+	remaining int
 }
 
 func (it *singleLinkedListIterator[T]) HasNext() bool {
-	return it.current != nil
+	return it.remaining != 0
 }
 
 func (it *singleLinkedListIterator[T]) Next() T {
 	tmp := it.current.Value
 	it.current = it.current.Next
+	it.remaining--
 	return tmp
 }
-*/
