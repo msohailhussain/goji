@@ -212,7 +212,6 @@ func (l *CircularDoublyLinkedList[T]) RemoveAt(index int) T {
 	return node.Value
 }
 
-
 func (l *CircularDoublyLinkedList[T]) Remove(element T) bool {
 	if l.Len() == 0 {
 		return false
@@ -242,28 +241,27 @@ func (l *CircularDoublyLinkedList[T]) ToSlice() []T {
 	return res
 }
 
-
-func (l *SinglyLinkedList[T]) GetIterator() utils.Iterator[T] {
+func (l *CircularDoublyLinkedList[T]) GetIterator() utils.Iterator[T] {
 	return &circularDoublyLinkedListIterator[T]{
-		current: l.first,
+		current:   l.first,
 		remaining: l.Len(),
 	}
 }
 
-func (it SinglyLinkedList[T]) String() string {
+func (it CircularDoublyLinkedList[T]) String() string {
 	return fmt.Sprint(it.ToSlice())
 }
 
 type circularDoublyLinkedListIterator[T any] struct {
-	current *singlyLinkedListNode[T]
+	current   *circularDoublyLinkedListNode[T]
 	remaining int
 }
 
-func (it *singleLinkedListIterator[T]) HasNext() bool {
+func (it *circularDoublyLinkedListIterator[T]) HasNext() bool {
 	return it.remaining != 0
 }
 
-func (it *singleLinkedListIterator[T]) Next() T {
+func (it *circularDoublyLinkedListIterator[T]) Next() T {
 	tmp := it.current.Value
 	it.current = it.current.Next
 	it.remaining--
