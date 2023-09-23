@@ -16,7 +16,8 @@ func TestDP(t *testing.T) {
 	W := 10
 	dp := NewDP(
 		func(get func(Pair[int, int]) int,
-			k Pair[int, int]) int {
+			k Pair[int, int],
+		) int {
 			if k.First < 0 {
 				return 0
 			}

@@ -8,7 +8,7 @@ import (
 )
 
 func TestGCD(t *testing.T) {
-	var testcases = []struct {
+	testcases := []struct {
 		a, b, gcd int
 	}{
 		{0, 7, 7},

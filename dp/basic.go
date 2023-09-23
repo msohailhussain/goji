@@ -42,9 +42,11 @@ func (dp *DP[Key, Value]) Get(k Key) Value {
 	}
 	return value
 }
+
 func (dp *DP[Key, Value]) Set(k Key, v Value) {
 	dp.m[k] = v
 }
+
 func (dp *DP[Key, Value]) String() string {
 	s := ""
 	for k, v := range dp.m {

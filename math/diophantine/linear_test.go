@@ -9,7 +9,7 @@ import (
 )
 
 func TestExtendedEuclideanAlgorithm(t *testing.T) {
-	var testcases = []struct {
+	testcases := []struct {
 		a, b, gcd int
 	}{
 		{0, 7, 7},
@@ -29,8 +29,9 @@ func TestExtendedEuclideanAlgorithm(t *testing.T) {
 		assert.Equal(t, ts.a*x+ts.b*y, gcd)
 	}
 }
+
 func TestComputeLinearDiophantine(t *testing.T) {
-	var testcases = []struct {
+	testcases := []struct {
 		a, b, c, gcd int
 	}{
 		// with solutions

@@ -18,7 +18,7 @@ type update struct {
 }
 
 func TestSqrtDecomposition(t *testing.T) {
-	var sqrtDecompositionTestData = []struct {
+	sqrtDecompositionTestData := []struct {
 		description string
 		array       []int
 		updates     []update
@@ -40,17 +40,21 @@ func TestSqrtDecomposition(t *testing.T) {
 		{
 			description: "test array with size 5 and updates",
 			array:       []int{1, 2, 3, 4, 5},
-			updates: []update{{index: 1, value: 3},
-				{index: 2, value: 4}},
+			updates: []update{
+				{index: 1, value: 3},
+				{index: 2, value: 4},
+			},
 			queries:  []query{{0, 5}, {0, 2}, {2, 4}},
 			expected: []int{17, 4, 8},
 		},
 		{
 			description: "test array with size 11 and updates",
 			array:       []int{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-			updates: []update{{index: 2, value: 2},
+			updates: []update{
+				{index: 2, value: 2},
 				{index: 3, value: 3},
-				{index: 6, value: 6}},
+				{index: 6, value: 6},
+			},
 			queries:  []query{{3, 5}, {7, 8}, {3, 7}, {0, 10}},
 			expected: []int{4, 1, 11, 18},
 		},
@@ -75,7 +79,6 @@ func TestSqrtDecomposition(t *testing.T) {
 					t.Fatalf("Expected result: %d\nFound: %d\n", test.expected[i], result)
 				}
 			}
-
 		})
 	}
 }

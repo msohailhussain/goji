@@ -5,8 +5,8 @@ import (
 	"hash/fnv"
 	"math/bits"
 
-	ll "github.com/lorenzotinfena/goji/collections/linkedlist"
 	coll "github.com/lorenzotinfena/goji/collections"
+	ll "github.com/lorenzotinfena/goji/collections/linkedlist"
 	"github.com/lorenzotinfena/goji/utils/slices"
 )
 

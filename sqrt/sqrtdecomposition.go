@@ -80,7 +80,7 @@ func (s *SqrtDecomposition[E, Q]) Query(start int, end int) Q {
 			start++
 		}
 
-		//middle part
+		// middle part
 		endBlock := end / s.blockSize
 		for i := firstIndexNextBlock / s.blockSize; i < endBlock; i++ {
 			q = s.merge(q, s.blocks[i])

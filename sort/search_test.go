@@ -9,7 +9,7 @@ import (
 )
 
 func TestLowerUpperBound(t *testing.T) {
-	var testcases = []struct {
+	testcases := []struct {
 		v                  []int
 		element            int
 		expectedLowerBound int
