@@ -1,6 +1,6 @@
 package tree
 
-type SegmentTree[E any, Q any] struct {
+type SegmentTree[E any, Q comparable] struct {
 	query  func(element E) Q
 	merge  func(q1 Q, q2 Q) Q
 	update func(oldQ Q, oldE E, newE E) (newQ Q)
@@ -12,7 +12,7 @@ type SegmentTree[E any, Q any] struct {
 // Pass nil as update if you never call Update method
 // Assumptions:
 //   - len(elements) > 0
-func NewSegmentTree[E any, Q any](
+func NewSegmentTree[E any, Q comparable](
 	elements []E,
 	query func(element E) Q,
 	merge func(q1 Q, q2 Q) Q,

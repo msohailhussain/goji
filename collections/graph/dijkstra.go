@@ -25,7 +25,7 @@ func (it *unitGraphDijkstraIterator[V]) HasNext() bool {
 
 func (it *unitGraphDijkstraIterator[V]) Next() ShortedPathVertex[V, int] {
 	cur := it.toVisit.Dequeue()
-	for _, v := range it.g.getAdjacents(cur.Vertex) {
+	for _, v := range it.g.GetAdjacents(cur.Vertex) {
 		if !it.visited.Contains(v) {
 			it.toVisit.Enqueue(ShortedPathVertex[V, int]{Vertex: v, Previous: &cur, Cost: cur.Cost + 1})
 		}
