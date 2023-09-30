@@ -32,5 +32,5 @@ func TestGraphDrawing(t *testing.T) {
 	g.AddEdge(5, 5)
 	g.AddEdge(9, 9)
 	s := g.String()
-	s = s
+	_ = s
 }
