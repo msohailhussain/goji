@@ -7,7 +7,7 @@ type TreeNode[V comparable] struct {
 	Children []*TreeNode[V]
 }
 
-func (t *TreeNode[V]) ToGraph() graph.UnitGraph[V] {
+func (t TreeNode[V]) ToGraph() graph.UnitGraph[V] {
 	g := *graph.NewUnitGraph[V]()
 	var build func(t *TreeNode[V])
 	build = func(t *TreeNode[V]) {
@@ -18,10 +18,10 @@ func (t *TreeNode[V]) ToGraph() graph.UnitGraph[V] {
 		}
 	}
 	g.AddVertex(t.Value)
-	build(t)
+	build(&t)
 	return g
 }
 
-func (t *TreeNode[V]) String() string {
+func (t TreeNode[V]) String() string {
 	return t.ToGraph().String()
 }

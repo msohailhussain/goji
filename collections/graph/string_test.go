@@ -2,7 +2,6 @@
 package graph_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/lorenzotinfena/goji/collections/graph"
@@ -32,5 +31,6 @@ func TestGraphDrawing(t *testing.T) {
 	g.AddEdge(7, 2)
 	g.AddEdge(5, 5)
 	g.AddEdge(9, 9)
-	fmt.Println(g)
+	s := g.String()
+	s = s
 }
