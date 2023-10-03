@@ -5,9 +5,12 @@ Browser the repo here: https://pkg.go.dev/github.com/lorenzotinfena/goji
 
 ## Showcase
 - Graph
+- Dijkstra
+- DFS and BFS
 - Heap
 - Set
 - Segment tree
+- Lazy segment tree
 - HAMT
 - Bitset
 - LinkedList
