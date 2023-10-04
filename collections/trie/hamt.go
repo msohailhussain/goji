@@ -44,7 +44,7 @@ func hash[T any](data T) uint {
 	return uint(f.Sum64())
 }
 
-var bitsPrefixSum = [...]uint64{0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60}
+var bitsPrefixSum = [...]uint64{0, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60}
 
 func (t *HAMT[K, V]) Set(key K, value V) {
 	element := hash(key)
@@ -62,7 +62,7 @@ func (t *HAMT[K, V]) Set(key K, value V) {
 		if n.hash == element {
 			break
 		}
-		data := (element << bitsPrefixSum[i]) >> (64 - 5)
+		data := (element << bitsPrefixSum[i]) >> (64 - 6)
 		if n.bitmap&(1<<data) != 0 {
 			n = n.next[bits.OnesCount64(uint64(n.bitmap<<(64-data)))]
 		} else {
@@ -92,9 +92,9 @@ func (t *HAMT[K, V]) Get(key K) (V, bool) {
 		if n.hash == element {
 			break
 		}
-		data := (element << bitsPrefixSum[i]) >> (64 - 5)
+		data := (element << bitsPrefixSum[i]) >> (64 - 6)
 		if n.bitmap&(1<<data) != 0 {
-			n = n.next[bits.OnesCount64(uint64(n.bitmap<<(64-data)))]
+			n = n.next[bits.OnesCount(n.bitmap<<(64-data))]
 		} else {
 			var foo V
 			return foo, false
