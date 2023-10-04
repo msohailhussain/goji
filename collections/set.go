@@ -36,6 +36,6 @@ func (s Set[T]) ToSlice() []T {
 	return keys
 }
 
-func (s Set[T]) Log() string {
+func (s Set[T]) String() string {
 	return fmt.Sprint(s.ToSlice())
 }
