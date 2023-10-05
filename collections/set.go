@@ -39,3 +39,8 @@ func (s Set[T]) ToSlice() []T {
 func (s Set[T]) String() string {
 	return fmt.Sprint(s.ToSlice())
 }
+
+func (s Set[T]) Len() int {
+	return len(s.m)
+}
+

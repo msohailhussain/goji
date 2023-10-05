@@ -5,7 +5,8 @@ import (
 )
 
 type MultiSet[T comparable] struct {
-	m map[T]int
+	m      map[T]int
+	length int
 }
 
 func NewMultiSet[T comparable]() *MultiSet[T] {
@@ -16,7 +17,10 @@ func (s *MultiSet[T]) Add(element T) {
 	_, exist := s.m[element]
 	if !exist {
 		s.m[element] = 1
+	} else {
+		s.m[element] = s.m[element] + 1
 	}
+	s.length++
 }
 
 func (s *MultiSet[T]) Remove(element T) {
@@ -26,6 +30,7 @@ func (s *MultiSet[T]) Remove(element T) {
 	} else {
 		s.m[element] = i - 1
 	}
+	s.length--
 }
 
 func (s *MultiSet[T]) MultiplicityOf(element T) int {
@@ -56,4 +61,8 @@ func (s MultiSet[T]) ToSlice() []T {
 
 func (s MultiSet[T]) String() string {
 	return fmt.Sprint(s.ToSlice())
+}
+
+func (s MultiSet[T]) Len() int {
+	return s.length
 }
