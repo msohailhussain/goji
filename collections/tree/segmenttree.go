@@ -1,5 +1,7 @@
 package tree
 
+import "fmt"
+
 type SegmentTree[E any, Q comparable] struct {
 	query  func(element E) Q
 	merge  func(q1 Q, q2 Q) Q
@@ -41,24 +43,6 @@ func NewSegmentTree[E any, Q comparable](
 		elements: elements,
 		segments: segments,
 	}
-}
-
-func (s *SegmentTree[E, Q]) String() string {
-	var toString func(i, l, r int) *TreeNode[Q]
-	toString = func(i, l, r int) *TreeNode[Q] {
-		children := make([]*TreeNode[Q], 0)
-		if l != r {
-			m := (l + r) / 2
-			children = append(children, toString(2*i+1, l, m))
-			children = append(children, toString(2*i+2, m+1, r))
-		}
-		return &TreeNode[Q]{
-			Value:    s.segments[i],
-			Children: children,
-		}
-	}
-	root := toString(0, 0, len(s.elements)-1)
-	return root.String()
 }
 
 // Performs a query to [start, end]
@@ -133,4 +117,23 @@ func (s *SegmentTree[E, Q]) Update(index int, newE E) {
 		}
 	}
 	updateRec(0, 0, len(s.elements)-1)
+}
+
+func (s *SegmentTree[E, Q]) Len() int {
+	return len(s.elements)
+}
+
+func (s *SegmentTree[E, Q]) String() string {
+	var rec func(l, r int) *TreeNode[string]
+	rec = func(l, r int) *TreeNode[string] {
+		node := &TreeNode[string]{
+			Value: fmt.Sprint(l) + "━━━" + fmt.Sprint(r) + "\n" + fmt.Sprint(s.Query(l, r)),
+		}
+		if l != r {
+			m := (l + r) / 2
+			node.Children = []*TreeNode[string]{rec(l, m), rec(m+1, r)}
+		}
+		return node
+	}
+	return rec(0, s.Len()-1).String()
 }

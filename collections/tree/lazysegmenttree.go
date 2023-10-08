@@ -1,5 +1,7 @@
 package tree
 
+import "fmt"
+
 // The main difference is pendingUpdates which holds for each segment its pending updates,
 // When mergeUpdates is set all pending updates for each node are continuously merged,
 // Otherwise they are all queued
@@ -51,24 +53,6 @@ func NewLazySegmentTree[E any, Q comparable](
 		pendingUpdates: pendingUpdates,
 		segments:       segments,
 	}
-}
-
-func (s *LazySegmentTree[Q]) String() string {
-	var toString func(i, l, r int) *TreeNode[Q]
-	toString = func(i, l, r int) *TreeNode[Q] {
-		children := make([]*TreeNode[Q], 0)
-		if l != r {
-			m := (l + r) / 2
-			children = append(children, toString(2*i+1, l, m))
-			children = append(children, toString(2*i+2, m+1, r))
-		}
-		return &TreeNode[Q]{
-			Value:    s.segments[i],
-			Children: children,
-		}
-	}
-	root := toString(0, 0, s.numberElements-1)
-	return root.String()
 }
 
 func (s *LazySegmentTree[Q]) lazyUpdate(i int, l, r int, update func(Q) Q) {
@@ -213,4 +197,23 @@ func (s *LazySegmentTree[Q]) UpdateRange(start, end int, update func(Q) Q) {
 		s.segments[i] = s.merge(s.segments[2*i+1], s.segments[2*i+2])
 	}
 	updateRec(0, 0, s.numberElements-1)
+}
+
+func (s *LazySegmentTree[Q]) Len() int {
+	return s.numberElements
+}
+
+func (s *LazySegmentTree[Q]) String() string {
+	var rec func(l, r int) *TreeNode[string]
+	rec = func(l, r int) *TreeNode[string] {
+		node := &TreeNode[string]{
+			Value: fmt.Sprint(l) + "━━━" + fmt.Sprint(r) + "\n" + fmt.Sprint(s.Query(l, r)),
+		}
+		if l != r {
+			m := (l + r) / 2
+			node.Children = []*TreeNode[string]{rec(l, m), rec(m+1, r)}
+		}
+		return node
+	}
+	return rec(0, s.Len()-1).String()
 }
