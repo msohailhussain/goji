@@ -43,6 +43,9 @@ func (l *CircularDoublyLinkedList[T]) InsertLast(value T) {
 			Prev:  l.first.Prev,
 			Next:  l.first,
 		}
+		l.first.Next = l.first
+		l.first.Prev = l.first
+		l.length++
 		return
 	}
 
