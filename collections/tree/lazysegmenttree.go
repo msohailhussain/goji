@@ -142,45 +142,41 @@ func (s *LazySegmentTree[Q]) Query(start int, end int) Q {
 //   - start and end are valid
 //   - update != nil
 func (s *LazySegmentTree[Q]) UpdateRange(start, end int, update func(Q) Q) {
-	lazyUpdate := func(i int, l, r int, update func(Q) Q) {
-		s.push(i, l, r) // TODO I don't know why but if I remove this it stops working
-		s.insertPendingUpdate(i, update)
-		s.push(i, l, r)
-	}
 	var updateRecRight func(i, l, r int)
 	updateRecRight = func(i, l, r int) {
 		if r == end {
-			lazyUpdate(i, l, r, update)
+			s.insertPendingUpdate(i, update)
+			s.push(i, l, r)
 			return
 		}
 
 		s.push(i, l, r)
 		m := (l + r) / 2
 		if end <= m {
-
 			updateRecRight(2*i+1, l, m)
 			s.push(2*i+2, m+1, r)
 		} else {
-
-			lazyUpdate(2*i+1, l, m, update)
+			s.insertPendingUpdate(2*i+1, update)
+			s.push(2*i+1, l, m)
 			updateRecRight(2*i+2, m+1, r)
 		}
 		s.segments[i] = s.merge(s.segments[2*i+1], s.segments[2*i+2])
 	}
 	var updateRecLeft func(i, l, r int)
 	updateRecLeft = func(i, l, r int) {
+		if l == start {
+			s.insertPendingUpdate(i, update)
+			s.push(i, l, r)
+			return
+		}
+		s.push(i, l, r)
 		m := (l + r) / 2
 		if start >= m+1 {
-			s.push(i, l, r)
 			updateRecLeft(2*i+2, m+1, r)
 			s.push(2*i+1, l, m)
 		} else {
-			if l == start {
-				lazyUpdate(i, l, r, update)
-				return
-			}
-			s.push(i, l, r)
-			lazyUpdate(2*i+2, m+1, r, update)
+			s.insertPendingUpdate(2*i+2, update)
+			s.push(2*i+2, m+1, r)
 			updateRecLeft(2*i+1, l, m)
 		}
 		s.segments[i] = s.merge(s.segments[2*i+1], s.segments[2*i+2])
@@ -188,7 +184,8 @@ func (s *LazySegmentTree[Q]) UpdateRange(start, end int, update func(Q) Q) {
 	var updateRec func(i, l, r int)
 	updateRec = func(i, l, r int) {
 		if start == l && end == r {
-			lazyUpdate(i, l, r, update)
+			s.insertPendingUpdate(i, update)
+			s.push(i, l, r)
 			return
 		}
 		s.push(i, l, r)
