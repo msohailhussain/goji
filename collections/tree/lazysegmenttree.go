@@ -224,6 +224,7 @@ func (s *LazySegmentTree[Q]) String() string {
 	return rec(0, s.Len()-1).String()
 }
 
+/*
 func (s *LazySegmentTree[Q]) String1() string {
 	var rec func(i, l, r int) *TreeNode[string]
 	rec = func(i, l, r int) *TreeNode[string] {
@@ -238,3 +239,4 @@ func (s *LazySegmentTree[Q]) String1() string {
 	}
 	return rec(0, 0, s.Len()-1).String()
 }
+*/
