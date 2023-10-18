@@ -20,3 +20,22 @@ func GCD[T constraints.Integer](a, b T) T {
 func LCM[T constraints.Integer](a, b T) T {
 	return Abs(a*b) / GCD(a, b)
 }
+
+// Assumptions:
+// - n >= 1
+func EulerTotient(n int) int {
+	result := n
+	i := 2
+	for ; i*i <= n; i++ {
+		if n%i == 0 {
+			for n%i == 0 {
+				n /= i
+			}
+			result -= result / i
+		}
+	}
+	if n > 1 {
+		result -= result / n
+	}
+	return result
+}
