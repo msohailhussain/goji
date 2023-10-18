@@ -25,8 +25,8 @@ func LCM[T constraints.Integer](a, b T) T {
 // - n >= 1
 func EulerTotient(n int) int {
 	result := n
-	i := 2
-	for ; i*i <= n; i++ {
+
+	for i := 2; i*i <= n; i++ {
 		if n%i == 0 {
 			for n%i == 0 {
 				n /= i
