@@ -21,6 +21,7 @@ func LCM[T constraints.Integer](a, b T) T {
 	return Abs(a*b) / GCD(a, b)
 }
 
+// Using code from: cp-algorithms.com/algebra/phi-function.html
 // Assumptions:
 // - n >= 1
 func EulerTotient(n int) int {
