@@ -14,32 +14,36 @@ type ShortedPathVertex[V comparable, W constr.Integer | constr.Float] struct {
 }
 
 type unitGraphDijkstraIterator[V comparable] struct {
-	g       UnitGraph[V]
-	toVisit cl.Queue[ShortedPathVertex[V, int]]
-	visited cl.Set[V]
+	getAdjacents func(V) []V
+	toAnalyze    cl.Queue[ShortedPathVertex[V, int]]
+	visited      cl.Set[V]
 }
 
 func (it *unitGraphDijkstraIterator[V]) HasNext() bool {
-	return it.toVisit.Len() != 0
+	return it.toAnalyze.Len() != 0
 }
 
 func (it *unitGraphDijkstraIterator[V]) Next() ShortedPathVertex[V, int] {
-	cur := it.toVisit.Dequeue()
-	for _, v := range it.g.GetAdjacents(cur.Vertex) {
+	cur := it.toAnalyze.Dequeue()
+	for _, v := range it.getAdjacents(cur.Vertex) {
 		if !it.visited.Contains(v) {
-			it.toVisit.Enqueue(ShortedPathVertex[V, int]{Vertex: v, Previous: &cur, Cost: cur.Cost + 1})
+			it.toAnalyze.Enqueue(ShortedPathVertex[V, int]{Vertex: v, Previous: &cur, Cost: cur.Cost + 1})
+			it.visited.Add(v)
 		}
 	}
 	return cur
 }
 
 func (g UnitGraph[V]) Dijkstra(from V) utils.Iterator[ShortedPathVertex[V, int]] {
-	toVisit := *cl.NewQueue[ShortedPathVertex[V, int]](nil)
-	toVisit.Enqueue(ShortedPathVertex[V, int]{Vertex: from, Previous: nil, Cost: 0})
+	toAnalyze := *cl.NewQueue[ShortedPathVertex[V, int]](nil)
+	toAnalyze.Enqueue(ShortedPathVertex[V, int]{Vertex: from, Previous: nil, Cost: 0})
+	visited := *cl.NewSet[V]()
+	visited.Add(from)
 
 	return &unitGraphDijkstraIterator[V]{
-		toVisit: toVisit,
-		visited: *cl.NewSet[V](),
+		getAdjacents: g.GetAdjacents,
+		toAnalyze:    toAnalyze,
+		visited:      visited,
 	}
 }
 
