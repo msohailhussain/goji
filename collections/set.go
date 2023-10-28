@@ -43,4 +43,3 @@ func (s Set[T]) String() string {
 func (s Set[T]) Len() int {
 	return len(s.m)
 }
-

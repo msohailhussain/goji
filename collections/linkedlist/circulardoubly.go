@@ -31,6 +31,12 @@ func (l *CircularDoublyLinkedList[T]) First() T { return l.first.Value }
 
 func (l *CircularDoublyLinkedList[T]) Last() T { return l.first.Prev.Value }
 
+func (l *CircularDoublyLinkedList[T]) FirstNode() *circularDoublyLinkedListNode[T] { return l.first }
+
+func (l *CircularDoublyLinkedList[T]) LastNode() *circularDoublyLinkedListNode[T] {
+	return l.first.Prev
+}
+
 func (l *CircularDoublyLinkedList[T]) InsertFirst(value T) {
 	l.InsertLast(value)
 	l.first = l.first.Prev
@@ -51,11 +57,36 @@ func (l *CircularDoublyLinkedList[T]) InsertLast(value T) {
 
 	node := &circularDoublyLinkedListNode[T]{
 		Value: value,
-		Prev:  l.first.Prev,
-		Next:  l.first,
 	}
 	node.Prev.Next = node
 	l.first.Prev = node
+	l.length++
+}
+
+func (l *CircularDoublyLinkedList[T]) InserBefore(node *circularDoublyLinkedListNode[T], value T) {
+	if node == l.first {
+		l.InsertFirst(value)
+		return
+	}
+
+	toAdd := &circularDoublyLinkedListNode[T]{
+		Value: value,
+		Prev:  node.Prev,
+		Next:  node,
+	}
+	node.Prev.Next = toAdd
+	node.Prev = toAdd
+	l.length++
+}
+
+func (l *CircularDoublyLinkedList[T]) InsertAfter(node *circularDoublyLinkedListNode[T], value T) {
+	toAdd := &circularDoublyLinkedListNode[T]{
+		Value: value,
+		Prev:  node,
+		Next:  node.Next,
+	}
+	node.Next.Prev = toAdd
+	node.Next = toAdd
 	l.length++
 }
 

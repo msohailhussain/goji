@@ -33,6 +33,10 @@ func (l *SinglyLinkedList[T]) First() T { return l.first.Value }
 
 func (l *SinglyLinkedList[T]) Last() T { return l.last.Value }
 
+func (l *SinglyLinkedList[T]) FirstNode() *singlyLinkedListNode[T] { return l.first }
+
+func (l *SinglyLinkedList[T]) LastNode() *singlyLinkedListNode[T] { return l.last }
+
 func (l *SinglyLinkedList[T]) InsertFirst(value T) {
 	if l.length == 0 {
 		nodeToInsert := &singlyLinkedListNode[T]{
@@ -65,6 +69,20 @@ func (l *SinglyLinkedList[T]) InsertLast(value T) {
 		}
 		l.last = l.last.Next
 	}
+	l.length++
+}
+
+func (l *SinglyLinkedList[T]) InsertAfter(node *singlyLinkedListNode[T], value T) {
+	if node == l.last {
+		l.InsertLast(value)
+		return
+	}
+
+	toAdd := &singlyLinkedListNode[T]{
+		Value: value,
+		Next:  node.Next,
+	}
+	node.Next = toAdd
 	l.length++
 }
 

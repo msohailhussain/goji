@@ -2,7 +2,6 @@ package collections
 
 type dfsIterator[T comparable] struct {
 	getNexts  func(T) []T
-	toAnalyzeSet Stack[T]
 	toAnalyze Stack[T]
 	visited   Set[T]
 }
