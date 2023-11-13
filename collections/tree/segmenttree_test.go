@@ -12,6 +12,7 @@ func TestSegmentTree(t *testing.T) {
 		[]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11},
 		func(element int) int { return element },
 		func(q1, q2 int) int { return q1 + q2 },
+		func(q1, q2 int) int { return q1 + q2 },
 	)
 
 	assert.Equal(t, s.Query(1, 4), 2+3+4+5)

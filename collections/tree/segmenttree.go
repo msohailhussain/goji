@@ -3,11 +3,12 @@ package tree
 import "fmt"
 
 type SegmentTree[E any, Q comparable] struct {
-	query func(element E) Q
-	merge func(q1 Q, q2 Q) Q
+	query         func(element E) Q
+	mergeForQuery func(q1 Q, q2 Q) Q
 
-	Elements []E
-	Segments []Q
+	NumberElements int
+	Elements       []E
+	Segments       []Q
 }
 
 // Pass nil as update if you never call Update method
@@ -16,7 +17,8 @@ type SegmentTree[E any, Q comparable] struct {
 func NewSegmentTree[E any, Q comparable](
 	elements []E,
 	query func(element E) Q,
-	merge func(q1 Q, q2 Q) Q,
+	mergeForQuery func(q1 Q, q2 Q) Q,
+	mergeSegments func(left, right Q) Q,
 ) *SegmentTree[E, Q] {
 	segments := make([]Q, 4*len(elements))
 
@@ -29,16 +31,17 @@ func NewSegmentTree[E any, Q comparable](
 		m := (l + r) / 2
 		build(2*i+1, l, m)
 		build(2*i+2, m+1, r)
-		segments[i] = merge(segments[2*i+1], segments[2*i+2])
+		segments[i] = mergeSegments(segments[2*i+1], segments[2*i+2])
 	}
 	build(0, 0, len(elements)-1)
 
 	return &SegmentTree[E, Q]{
-		query: query,
-		merge: merge,
+		query:         query,
+		mergeForQuery: mergeForQuery,
 
-		Elements: elements,
-		Segments: segments,
+		NumberElements: len(elements),
+		Elements:       elements,
+		Segments:       segments,
 	}
 }
 
@@ -56,7 +59,7 @@ func (s *SegmentTree[E, Q]) Query(start int, end int) Q {
 		if end <= m {
 			return queryRecRight(2*i+1, l, m)
 		} else {
-			return s.merge(
+			return s.mergeForQuery(
 				s.Segments[2*i+1],
 				queryRecRight(2*i+2, m+1, r),
 			)
@@ -71,7 +74,7 @@ func (s *SegmentTree[E, Q]) Query(start int, end int) Q {
 			if l == start {
 				return s.Segments[i]
 			}
-			return s.merge(
+			return s.mergeForQuery(
 				queryRecLeft(2*i+1, l, m),
 				s.Segments[2*i+2],
 			)
@@ -88,7 +91,7 @@ func (s *SegmentTree[E, Q]) Query(start int, end int) Q {
 		} else if start >= m+1 {
 			return queryRec(2*i+2, m+1, r)
 		} else {
-			return s.merge(
+			return s.mergeForQuery(
 				queryRecLeft(2*i+1, l, m),
 				queryRecRight(2*i+2, m+1, r),
 			)
@@ -99,7 +102,7 @@ func (s *SegmentTree[E, Q]) Query(start int, end int) Q {
 
 // Assumptions:
 //   - index is valid
-func (s *SegmentTree[E, Q]) Update(index int, update func(oldQ Q, oldE E) (newQ Q)) {
+func (s *SegmentTree[E, Q]) Update(index int, update func(old Q, oldE E) Q) {
 	var updateRec func(i, l, r int)
 	updateRec = func(i, l, r int) {
 		s.Segments[i] = update(s.Segments[i], s.Elements[index])
@@ -133,4 +136,71 @@ func (s *SegmentTree[E, Q]) String() string {
 		return node
 	}
 	return rec(0, s.Len()-1).String()
+}
+
+// Assumptions:
+//   - index is valid
+func (s *SegmentTree[E, Q]) UpdateRangeWithoutPropagation(start, end int, update func(old Q) Q, mergeSegments func(left, right *Q, old Q) Q) {
+	var updateRecRight func(i, l, r int)
+	updateRecRight = func(i, l, r int) {
+		if r == end {
+			s.Segments[i] = update(s.Segments[i])
+			if l != r {
+				s.Segments[i] = mergeSegments(&s.Segments[2*i+1], &s.Segments[2*i+2], s.Segments[i])
+			} else {
+				s.Segments[i] = mergeSegments(nil, nil, s.Segments[i])
+			}
+		}
+		m := (l + r) / 2
+		if end <= m {
+			updateRecRight(2*i+1, l, m)
+		} else {
+			s.Segments[2*i+2] = update(s.Segments[2*i+2])
+			updateRecRight(2*i+2, m+1, r)
+		}
+		s.Segments[i] = mergeSegments(&s.Segments[2*i+1], &s.Segments[2*i+2], s.Segments[i])
+	}
+	var updateRecLeft func(i, l, r int)
+	updateRecLeft = func(i, l, r int) {
+		if l == start {
+			s.Segments[i] = update(s.Segments[i])
+			if l != r {
+				s.Segments[i] = mergeSegments(&s.Segments[2*i+1], &s.Segments[2*i+2], s.Segments[i])
+			} else {
+				s.Segments[i] = mergeSegments(nil, nil, s.Segments[i])
+			}
+			return
+		}
+		m := (l + r) / 2
+		if start >= m+1 {
+			updateRecLeft(2*i+2, m+1, r)
+		} else {
+			s.Segments[2*i+1] = update(s.Segments[2*i+1])
+			updateRecLeft(2*i+1, l, m)
+		}
+		s.Segments[i] = mergeSegments(&s.Segments[2*i+1], &s.Segments[2*i+2], s.Segments[i])
+	}
+	var updateRec func(i, l, r int)
+	updateRec = func(i, l, r int) {
+		if start == l && end == r {
+			s.Segments[i] = update(s.Segments[i])
+			if l != r {
+				s.Segments[i] = mergeSegments(&s.Segments[2*i+1], &s.Segments[2*i+2], s.Segments[i])
+			} else {
+				s.Segments[i] = mergeSegments(nil, nil, s.Segments[i])
+			}
+			return
+		}
+		m := (l + r) / 2
+		if end <= m {
+			updateRec(2*i+1, l, m)
+		} else if start >= m+1 {
+			updateRec(2*i+2, m+1, r)
+		} else {
+			updateRecLeft(2*i+1, l, m)
+			updateRecRight(2*i+2, m+1, r)
+		}
+		s.Segments[i] = mergeSegments(&s.Segments[2*i+1], &s.Segments[2*i+2], s.Segments[i])
+	}
+	updateRec(0, 0, s.NumberElements-1)
 }

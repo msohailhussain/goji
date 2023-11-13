@@ -13,16 +13,17 @@ func TestLazySegmentTree(t *testing.T) {
 		[]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11},
 		func(element int) int { return element },
 		func(q1, q2 int) int { return math.Max(q1, q2) },
+		func(q1, q2 int) int { return math.Max(q1, q2) },
 		func(f1, f2 func(int) int) func(int) int {
 			tmp := f1(0) + f2(0)
 			return func(i int) int { return i + tmp }
 		},
 	)
-	s.UpdateRange(0, 4, func(q int) int { return q + 1 })
-	s.UpdateRange(1, 2, func(q int) int { return q + 1 })
-	s.UpdateRange(5, 5, func(q int) int { return q + 1 })
-	s.UpdateRange(3, 7, func(q int) int { return q + 1 })
-	s.UpdateRange(6, 8, func(q int) int { return q + 1 })
+	s.UpdateRange(0, 4, func(q int) int { return q + 1 }, func(l, r, old int) int { return math.Max(l, r) })
+	s.UpdateRange(1, 2, func(q int) int { return q + 1 }, func(l, r, old int) int { return math.Max(l, r) })
+	s.UpdateRange(5, 5, func(q int) int { return q + 1 }, func(l, r, old int) int { return math.Max(l, r) })
+	s.UpdateRange(3, 7, func(q int) int { return q + 1 }, func(l, r, old int) int { return math.Max(l, r) })
+	s.UpdateRange(6, 8, func(q int) int { return q + 1 }, func(l, r, old int) int { return math.Max(l, r) })
 	elements := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}
 	for i := 0; i <= 4; i++ {
 		elements[i]++
