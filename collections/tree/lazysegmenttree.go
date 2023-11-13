@@ -9,9 +9,9 @@ type LazySegmentTree[Q comparable] struct {
 	merge        func(q1 Q, q2 Q) Q
 	mergeUpdates func(func(Q) Q, func(Q) Q) func(Q) Q
 
-	numberElements int
-	pendingUpdates [][]func(Q) Q
-	segments       []Q
+	NumberElements int
+	PendingUpdates [][]func(Q) Q
+	Segments       []Q
 }
 
 // Pass nil as mergeUpdates if you never call UpdateRange or if you can't merge updates
@@ -49,35 +49,35 @@ func NewLazySegmentTree[E any, Q comparable](
 		merge:        merge,
 		mergeUpdates: mergeUpdates,
 
-		numberElements: len(elements),
-		pendingUpdates: pendingUpdates,
-		segments:       segments,
+		NumberElements: len(elements),
+		PendingUpdates: pendingUpdates,
+		Segments:       segments,
 	}
 }
 
 func (s *LazySegmentTree[Q]) insertPendingUpdate(i int, update func(Q) Q) {
 	if s.mergeUpdates == nil {
-		s.pendingUpdates[i] = append(s.pendingUpdates[i], update)
+		s.PendingUpdates[i] = append(s.PendingUpdates[i], update)
 	} else {
-		if len(s.pendingUpdates[i]) == 0 {
-			s.pendingUpdates[i] = append(s.pendingUpdates[i], update)
+		if len(s.PendingUpdates[i]) == 0 {
+			s.PendingUpdates[i] = append(s.PendingUpdates[i], update)
 		} else {
-			s.pendingUpdates[i][0] = s.mergeUpdates(s.pendingUpdates[i][0], update)
+			s.PendingUpdates[i][0] = s.mergeUpdates(s.PendingUpdates[i][0], update)
 		}
 	}
 }
 
 func (s *LazySegmentTree[Q]) push(i, l, r int) {
-	for _, f := range s.pendingUpdates[i] {
-		s.segments[i] = f(s.segments[i])
+	for _, f := range s.PendingUpdates[i] {
+		s.Segments[i] = f(s.Segments[i])
 	}
 	if l != r {
-		for _, f := range s.pendingUpdates[i] {
+		for _, f := range s.PendingUpdates[i] {
 			s.insertPendingUpdate(2*i+1, f)
 			s.insertPendingUpdate(2*i+2, f)
 		}
 	}
-	s.pendingUpdates[i] = make([]func(Q) Q, 0)
+	s.PendingUpdates[i] = make([]func(Q) Q, 0)
 }
 
 // Performs a query to [start, end]
@@ -89,14 +89,14 @@ func (s *LazySegmentTree[Q]) Query(start int, end int) Q {
 	queryRecRight = func(i, l, r int) Q {
 		s.push(i, l, r)
 		if r == end {
-			return s.segments[i]
+			return s.Segments[i]
 		}
 		m := (l + r) / 2
 		if end <= m {
 			return queryRecRight(2*i+1, l, m)
 		} else {
 			return s.merge(
-				s.segments[2*i+1],
+				s.Segments[2*i+1],
 				queryRecRight(2*i+2, m+1, r),
 			)
 		}
@@ -109,11 +109,11 @@ func (s *LazySegmentTree[Q]) Query(start int, end int) Q {
 			return queryRecLeft(2*i+2, m+1, r)
 		} else {
 			if l == start {
-				return s.segments[i]
+				return s.Segments[i]
 			}
 			return s.merge(
 				queryRecLeft(2*i+1, l, m),
-				s.segments[2*i+2],
+				s.Segments[2*i+2],
 			)
 		}
 	}
@@ -121,7 +121,7 @@ func (s *LazySegmentTree[Q]) Query(start int, end int) Q {
 	queryRec = func(i, l, r int) Q {
 		s.push(i, l, r)
 		if l == r {
-			return s.segments[i]
+			return s.Segments[i]
 		}
 		m := (l + r) / 2
 		if end <= m {
@@ -135,7 +135,7 @@ func (s *LazySegmentTree[Q]) Query(start int, end int) Q {
 			)
 		}
 	}
-	return queryRec(0, 0, s.numberElements-1)
+	return queryRec(0, 0, s.NumberElements-1)
 }
 
 // Assumptions:
@@ -160,7 +160,7 @@ func (s *LazySegmentTree[Q]) UpdateRange(start, end int, update func(Q) Q) {
 			s.push(2*i+1, l, m)
 			updateRecRight(2*i+2, m+1, r)
 		}
-		s.segments[i] = s.merge(s.segments[2*i+1], s.segments[2*i+2])
+		s.Segments[i] = s.merge(s.Segments[2*i+1], s.Segments[2*i+2])
 	}
 	var updateRecLeft func(i, l, r int)
 	updateRecLeft = func(i, l, r int) {
@@ -179,7 +179,7 @@ func (s *LazySegmentTree[Q]) UpdateRange(start, end int, update func(Q) Q) {
 			s.push(2*i+2, m+1, r)
 			updateRecLeft(2*i+1, l, m)
 		}
-		s.segments[i] = s.merge(s.segments[2*i+1], s.segments[2*i+2])
+		s.Segments[i] = s.merge(s.Segments[2*i+1], s.Segments[2*i+2])
 	}
 	var updateRec func(i, l, r int)
 	updateRec = func(i, l, r int) {
@@ -200,13 +200,13 @@ func (s *LazySegmentTree[Q]) UpdateRange(start, end int, update func(Q) Q) {
 			updateRecLeft(2*i+1, l, m)
 			updateRecRight(2*i+2, m+1, r)
 		}
-		s.segments[i] = s.merge(s.segments[2*i+1], s.segments[2*i+2])
+		s.Segments[i] = s.merge(s.Segments[2*i+1], s.Segments[2*i+2])
 	}
-	updateRec(0, 0, s.numberElements-1)
+	updateRec(0, 0, s.NumberElements-1)
 }
 
 func (s *LazySegmentTree[Q]) Len() int {
-	return s.numberElements
+	return s.NumberElements
 }
 
 func (s *LazySegmentTree[Q]) String() string {

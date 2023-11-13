@@ -3,12 +3,11 @@ package tree
 import "fmt"
 
 type SegmentTree[E any, Q comparable] struct {
-	query  func(element E) Q
-	merge  func(q1 Q, q2 Q) Q
-	update func(oldQ Q, oldE E, newE E) (newQ Q)
+	query func(element E) Q
+	merge func(q1 Q, q2 Q) Q
 
-	elements []E
-	segments []Q
+	Elements []E
+	Segments []Q
 }
 
 // Pass nil as update if you never call Update method
@@ -18,7 +17,6 @@ func NewSegmentTree[E any, Q comparable](
 	elements []E,
 	query func(element E) Q,
 	merge func(q1 Q, q2 Q) Q,
-	update func(oldQ Q, oldE E, newE E) (newQ Q),
 ) *SegmentTree[E, Q] {
 	segments := make([]Q, 4*len(elements))
 
@@ -36,12 +34,11 @@ func NewSegmentTree[E any, Q comparable](
 	build(0, 0, len(elements)-1)
 
 	return &SegmentTree[E, Q]{
-		query:  query,
-		merge:  merge,
-		update: update,
+		query: query,
+		merge: merge,
 
-		elements: elements,
-		segments: segments,
+		Elements: elements,
+		Segments: segments,
 	}
 }
 
@@ -53,14 +50,14 @@ func (s *SegmentTree[E, Q]) Query(start int, end int) Q {
 	var queryRecRight func(i, l, r int) Q
 	queryRecRight = func(i, l, r int) Q {
 		if r == end {
-			return s.segments[i]
+			return s.Segments[i]
 		}
 		m := (l + r) / 2
 		if end <= m {
 			return queryRecRight(2*i+1, l, m)
 		} else {
 			return s.merge(
-				s.segments[2*i+1],
+				s.Segments[2*i+1],
 				queryRecRight(2*i+2, m+1, r),
 			)
 		}
@@ -72,18 +69,18 @@ func (s *SegmentTree[E, Q]) Query(start int, end int) Q {
 			return queryRecLeft(2*i+2, m+1, r)
 		} else {
 			if l == start {
-				return s.segments[i]
+				return s.Segments[i]
 			}
 			return s.merge(
 				queryRecLeft(2*i+1, l, m),
-				s.segments[2*i+2],
+				s.Segments[2*i+2],
 			)
 		}
 	}
 	var queryRec func(i, l, r int) Q
 	queryRec = func(i, l, r int) Q {
 		if l == r {
-			return s.segments[i]
+			return s.Segments[i]
 		}
 		m := (l + r) / 2
 		if end <= m {
@@ -97,15 +94,15 @@ func (s *SegmentTree[E, Q]) Query(start int, end int) Q {
 			)
 		}
 	}
-	return queryRec(0, 0, len(s.elements)-1)
+	return queryRec(0, 0, len(s.Elements)-1)
 }
 
 // Assumptions:
 //   - index is valid
-func (s *SegmentTree[E, Q]) Update(index int, newE E) {
+func (s *SegmentTree[E, Q]) Update(index int, update func(oldQ Q, oldE E) (newQ Q)) {
 	var updateRec func(i, l, r int)
 	updateRec = func(i, l, r int) {
-		s.segments[i] = s.update(s.segments[i], s.elements[index], newE)
+		s.Segments[i] = update(s.Segments[i], s.Elements[index])
 		if l == r {
 			return
 		}
@@ -116,11 +113,11 @@ func (s *SegmentTree[E, Q]) Update(index int, newE E) {
 			updateRec(2*i+2, m+1, r)
 		}
 	}
-	updateRec(0, 0, len(s.elements)-1)
+	updateRec(0, 0, len(s.Elements)-1)
 }
 
 func (s *SegmentTree[E, Q]) Len() int {
-	return len(s.elements)
+	return len(s.Elements)
 }
 
 func (s *SegmentTree[E, Q]) String() string {
