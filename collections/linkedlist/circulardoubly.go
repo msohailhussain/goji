@@ -46,8 +46,8 @@ func (l *CircularDoublyLinkedList[T]) InsertLast(value T) {
 	if l.length == 0 {
 		l.first = &circularDoublyLinkedListNode[T]{
 			Value: value,
-			Prev:  l.first.Prev,
-			Next:  l.first,
+			Prev:  nil,
+			Next:  nil,
 		}
 		l.first.Next = l.first
 		l.first.Prev = l.first
@@ -57,6 +57,8 @@ func (l *CircularDoublyLinkedList[T]) InsertLast(value T) {
 
 	node := &circularDoublyLinkedListNode[T]{
 		Value: value,
+		Prev:  l.first.Prev,
+		Next:  l.first,
 	}
 	node.Prev.Next = node
 	l.first.Prev = node
@@ -165,6 +167,16 @@ func (l *CircularDoublyLinkedList[T]) GetElementEqualsTo(value T) (T, bool) {
 func (l *CircularDoublyLinkedList[T]) Clear() {
 	l.first = nil
 	l.length = 0
+}
+
+// index < length
+func (l *CircularDoublyLinkedList[T]) GetNodeAt(index int) *circularDoublyLinkedListNode[T] {
+	n := l.first
+	for index > 0 {
+		n = n.Next
+		index--
+	}
+	return n
 }
 
 // index < length

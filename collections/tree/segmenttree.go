@@ -102,10 +102,10 @@ func (s *SegmentTree[E, Q]) Query(start int, end int) Q {
 
 // Assumptions:
 //   - index is valid
-func (s *SegmentTree[E, Q]) Update(index int, update func(old Q, oldE E) Q) {
+func (s *SegmentTree[E, Q]) Update(index int, update func(Q) Q) {
 	var updateRec func(i, l, r int)
 	updateRec = func(i, l, r int) {
-		s.Segments[i] = update(s.Segments[i], s.Elements[index])
+		s.Segments[i] = update(s.Segments[i])
 		if l == r {
 			return
 		}
@@ -203,4 +203,104 @@ func (s *SegmentTree[E, Q]) UpdateRangeWithoutPropagation(start, end int, update
 		s.Segments[i] = mergeSegments(&s.Segments[2*i+1], &s.Segments[2*i+2], s.Segments[i])
 	}
 	updateRec(0, 0, s.NumberElements-1)
+}
+
+func (s *SegmentTree[E, Q]) RightMost(left int, merge func(Q, Q) Q, predicate func(Q) bool) int {
+	var recRight func(i, l, r int, q Q) (int, Q)
+	recRight = func(i, l, r int, q Q) (int, Q) {
+		if l == r {
+			tmp := merge(q, s.Segments[i])
+			if predicate(tmp) {
+				return l + 1, tmp
+			} else {
+				return l, q
+			}
+		}
+		m := (l + r) / 2
+		tmp := merge(q, s.Segments[2*i+1])
+		if predicate(tmp) {
+			return recRight(2*i+2, m+1, r, tmp)
+		} else {
+			return recRight(2*i+1, l, m, q)
+		}
+	}
+	var rec func(i, l, r int) (int, Q)
+	rec = func(i, l, r int) (int, Q) {
+		if l == r {
+			if predicate(s.Segments[i]) {
+				return l + 1, s.Segments[i]
+			} else {
+				var tmp Q
+				return l, tmp
+			}
+		}
+		m := (l + r) / 2
+		if left <= m {
+			rightMostAsFar, q := rec(2*i+1, l, m)
+			if rightMostAsFar == m+1 {
+				tmp := merge(q, s.Segments[2*i+2])
+				if predicate(tmp) {
+					return r + 1, tmp
+				} else {
+					return recRight(2*i+2, m+1, r, q)
+				}
+			} else {
+				return rightMostAsFar, q
+			}
+		} else {
+			return rec(2*i+2, m+1, r)
+		}
+	}
+	rightMost, _ := rec(0, 0, len(s.Elements)-1)
+	return rightMost
+}
+
+func (s *SegmentTree[E, Q]) LeftMost(right int, merge func(Q, Q) Q, predicate func(Q) bool) int {
+	var recLeft func(i, l, r int, q Q) (int, Q)
+	recLeft = func(i, l, r int, q Q) (int, Q) {
+		if l == r {
+			tmp := merge(q, s.Segments[i])
+			if predicate(tmp) {
+				return l - 1, tmp
+			} else {
+				return l, q
+			}
+		}
+		m := (l + r) / 2
+		tmp := merge(q, s.Segments[2*i+2])
+		if predicate(tmp) {
+			return recLeft(2*i+1, l, m, tmp)
+		} else {
+			return recLeft(2*i+2, m+1, r, q)
+		}
+	}
+	var rec func(i, l, r int) (int, Q)
+	rec = func(i, l, r int) (int, Q) {
+		if l == r {
+			if predicate(s.Segments[i]) {
+				return l - 1, s.Segments[i]
+			} else {
+				var tmp Q
+				return l, tmp
+			}
+		}
+		m := (l + r) / 2
+		if right > m {
+			leftMostAsFar, q := rec(2*i+2, m+1, r)
+			if leftMostAsFar == m {
+				tmp := merge(q, s.Segments[2*i+1])
+				if predicate(tmp) {
+					return l - 1, tmp
+				} else {
+					return recLeft(2*i+1, l, m, q)
+				}
+			} else {
+				return leftMostAsFar, q
+			}
+		} else {
+			return rec(2*i+1, l, m)
+		}
+	}
+	rightMost, _ := rec(0, 0, len(s.Elements)-1)
+	return rightMost
 }
