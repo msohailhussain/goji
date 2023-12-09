@@ -2,7 +2,7 @@ package settheory
 
 import "github.com/lorenzotinfena/goji/collections"
 
-type Set[T comparable] interface {
+type set[T comparable] interface {
 	collections.HashSet[T] | collections.MultiHashSet[T]
 	Add(T)
 	Remove(T)
@@ -11,7 +11,7 @@ type Set[T comparable] interface {
 	Len() int
 }
 
-func Union[T comparable, S Set[T]](s1, s2 S) S {
+func Union[T comparable, S set[T]](s1, s2 S) S {
 	var res S
 	switch (interface{}(s1)).(type) {
 	case collections.HashSet[T]:
@@ -29,7 +29,7 @@ func Union[T comparable, S Set[T]](s1, s2 S) S {
 	return res
 }
 
-func Intersection[T comparable, S Set[T]](s1, s2 S) S {
+func Intersection[T comparable, S set[T]](s1, s2 S) S {
 	if s2.Len() < s1.Len() {
 		s1, s2 = s2, s1
 	}
