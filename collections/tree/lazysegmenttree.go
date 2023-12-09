@@ -225,19 +225,110 @@ func (s *LazySegmentTree[Q]) String() string {
 	return rec(0, s.Len()-1).String()
 }
 
-/*
-func (s *LazySegmentTree[Q]) String1() string {
-	var rec func(i, l, r int) *TreeNode[string]
-	rec = func(i, l, r int) *TreeNode[string] {
-		node := &TreeNode[string]{
-			Value: fmt.Sprint(l+1) + "━━━" + fmt.Sprint(r+1) + "\n" + fmt.Sprint(s.segments[i]) + "\n" + fmt.Sprint(len(s.pendingUpdates[i])),
+func (s *LazySegmentTree[Q]) RightMost(left int, merge func(Q, Q) Q, predicate func(Q) bool) int {
+	var recRight func(i, l, r int, q Q) (int, Q)
+	recRight = func(i, l, r int, q Q) (int, Q) {
+		s.push(i, l, r)
+		if l == r {
+			tmp := merge(q, s.Segments[i])
+			if predicate(tmp) {
+				return l + 1, tmp
+			} else {
+				return l, q
+			}
 		}
-		if l != r {
-			m := (l + r) / 2
-			node.Children = []*TreeNode[string]{rec(2*i+1, l, m), rec(2*i+2, m+1, r)}
+		m := (l + r) / 2
+		s.push(2*i+1, l, m)
+		tmp := merge(q, s.Segments[2*i+1])
+		if predicate(tmp) {
+			return recRight(2*i+2, m+1, r, tmp)
+		} else {
+			return recRight(2*i+1, l, m, q)
 		}
-		return node
 	}
-	return rec(0, 0, s.Len()-1).String()
+	var rec func(i, l, r int) (int, Q)
+	rec = func(i, l, r int) (int, Q) {
+		s.push(i, l, r)
+		if l == r {
+			if predicate(s.Segments[i]) {
+				return l + 1, s.Segments[i]
+			} else {
+				var tmp Q
+				return l, tmp
+			}
+		}
+		m := (l + r) / 2
+		if left <= m {
+			rightMostAsFar, q := rec(2*i+1, l, m)
+			if rightMostAsFar == m+1 {
+				s.push(2*i+2, m+1, r)
+				tmp := merge(q, s.Segments[2*i+2])
+				if predicate(tmp) {
+					return r + 1, tmp
+				} else {
+					return recRight(2*i+2, m+1, r, q)
+				}
+			} else {
+				return rightMostAsFar, q
+			}
+		} else {
+			return rec(2*i+2, m+1, r)
+		}
+	}
+	rightMost, _ := rec(0, 0, s.NumberElements-1)
+	return rightMost
 }
-*/
+
+func (s *LazySegmentTree[Q]) LeftMost(right int, merge func(Q, Q) Q, predicate func(Q) bool) int {
+	var recLeft func(i, l, r int, q Q) (int, Q)
+	recLeft = func(i, l, r int, q Q) (int, Q) {
+		s.push(i, l, r)
+		if l == r {
+			tmp := merge(q, s.Segments[i])
+			if predicate(tmp) {
+				return l - 1, tmp
+			} else {
+				return l, q
+			}
+		}
+		m := (l + r) / 2
+		s.push(2*i+2, m+1, r)
+		tmp := merge(q, s.Segments[2*i+2])
+		if predicate(tmp) {
+			return recLeft(2*i+1, l, m, tmp)
+		} else {
+			return recLeft(2*i+2, m+1, r, q)
+		}
+	}
+	var rec func(i, l, r int) (int, Q)
+	rec = func(i, l, r int) (int, Q) {
+		s.push(i, l, r)
+		if l == r {
+			if predicate(s.Segments[i]) {
+				return l - 1, s.Segments[i]
+			} else {
+				var tmp Q
+				return l, tmp
+			}
+		}
+		m := (l + r) / 2
+		if right > m {
+			leftMostAsFar, q := rec(2*i+2, m+1, r)
+			if leftMostAsFar == m {
+				s.push(2*i+1, l, m)
+				tmp := merge(q, s.Segments[2*i+1])
+				if predicate(tmp) {
+					return l - 1, tmp
+				} else {
+					return recLeft(2*i+1, l, m, q)
+				}
+			} else {
+				return leftMostAsFar, q
+			}
+		} else {
+			return rec(2*i+1, l, m)
+		}
+	}
+	rightMost, _ := rec(0, 0, s.NumberElements-1)
+	return rightMost
+}
