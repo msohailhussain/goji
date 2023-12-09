@@ -16,7 +16,7 @@ type ShortedPathVertex[V comparable, W constr.Integer | constr.Float] struct {
 type unitGraphDijkstraIterator[V comparable] struct {
 	getAdjacents func(V) []V
 	toAnalyze    cl.Queue[ShortedPathVertex[V, int]]
-	visited      cl.Set[V]
+	visited      cl.HashSet[V]
 }
 
 func (it *unitGraphDijkstraIterator[V]) HasNext() bool {
@@ -37,7 +37,7 @@ func (it *unitGraphDijkstraIterator[V]) Next() ShortedPathVertex[V, int] {
 func (g UnitGraph[V]) Dijkstra(from V) utils.Iterator[ShortedPathVertex[V, int]] {
 	toAnalyze := *cl.NewQueue[ShortedPathVertex[V, int]](nil)
 	toAnalyze.Enqueue(ShortedPathVertex[V, int]{Vertex: from, Previous: nil, Cost: 0})
-	visited := *cl.NewSet[V]()
+	visited := *cl.NewHashSet[V]()
 	visited.Add(from)
 
 	return &unitGraphDijkstraIterator[V]{

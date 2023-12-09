@@ -4,16 +4,16 @@ import (
 	"fmt"
 )
 
-type MultiSet[T comparable] struct {
+type MultiHashSet[T comparable] struct {
 	m      map[T]int
 	length int
 }
 
-func NewMultiSet[T comparable]() *MultiSet[T] {
-	return &MultiSet[T]{m: make(map[T]int)}
+func NewMultiHashSet[T comparable]() *MultiHashSet[T] {
+	return &MultiHashSet[T]{m: make(map[T]int)}
 }
 
-func (s *MultiSet[T]) Add(element T) {
+func (s *MultiHashSet[T]) Add(element T) {
 	_, exist := s.m[element]
 	if !exist {
 		s.m[element] = 1
@@ -23,7 +23,7 @@ func (s *MultiSet[T]) Add(element T) {
 	s.length++
 }
 
-func (s *MultiSet[T]) Remove(element T) {
+func (s *MultiHashSet[T]) Remove(element T) {
 	i, exist := s.m[element]
 	if !exist || i == 1 {
 		delete(s.m, element)
@@ -33,7 +33,7 @@ func (s *MultiSet[T]) Remove(element T) {
 	s.length--
 }
 
-func (s *MultiSet[T]) MultiplicityOf(element T) int {
+func (s *MultiHashSet[T]) MultiplicityOf(element T) int {
 	i, exist := s.m[element]
 	if exist {
 		return i
@@ -42,12 +42,12 @@ func (s *MultiSet[T]) MultiplicityOf(element T) int {
 	}
 }
 
-func (s MultiSet[T]) Contains(element T) bool {
+func (s MultiHashSet[T]) Contains(element T) bool {
 	_, exist := s.m[element]
 	return exist
 }
 
-func (s MultiSet[T]) ToSlice() []T {
+func (s MultiHashSet[T]) ToSlice() []T {
 	keys := make([]T, 0, len(s.m))
 	for k := range s.m {
 		i := s.m[k]
@@ -59,10 +59,10 @@ func (s MultiSet[T]) ToSlice() []T {
 	return keys
 }
 
-func (s MultiSet[T]) String() string {
+func (s MultiHashSet[T]) String() string {
 	return fmt.Sprint(s.ToSlice())
 }
 
-func (s MultiSet[T]) Len() int {
+func (s MultiHashSet[T]) Len() int {
 	return s.length
 }

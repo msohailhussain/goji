@@ -18,7 +18,7 @@ type Graph[V comparable, W constraints.Integer | constraints.Float] interface {
 
 // Every vertex is unique
 type UnitGraph[V constraints.Equalized] struct {
-	Edges map[V]cl.Set[V]
+	Edges map[V]cl.HashSet[V]
 }
 
 // Every vertex is unique
@@ -28,7 +28,7 @@ type WeightedGraph[V constraints.Equalized, W constraints.Integer | constraints.
 
 func NewUnitGraph[V constraints.Equalized]() *UnitGraph[V] {
 	return &UnitGraph[V]{
-		Edges: make(map[V]cl.Set[V]),
+		Edges: make(map[V]cl.HashSet[V]),
 	}
 }
 
@@ -41,7 +41,7 @@ func NewWeightedGraph[V constraints.Equalized, W constraints.Integer | constrain
 func (g *UnitGraph[V]) AddVertex(v V) {
 	_, present := g.Edges[v]
 	if !present {
-		g.Edges[v] = *cl.NewSet[V]()
+		g.Edges[v] = *cl.NewHashSet[V]()
 	}
 }
 

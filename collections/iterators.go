@@ -3,7 +3,7 @@ package collections
 type dfsIterator[T comparable] struct {
 	getNexts  func(T) []T
 	toAnalyze Stack[T]
-	visited   Set[T]
+	visited   HashSet[T]
 }
 
 func (it *dfsIterator[T]) HasNext() bool {
@@ -29,7 +29,7 @@ func (it *dfsIterator[T]) Next() T {
 func NewIteratorDFS[T comparable](root T, getNexts func(T) []T) *dfsIterator[T] {
 	toAnalyze := *NewStack[T](nil)
 	toAnalyze.Push(root)
-	visited := *NewSet[T]()
+	visited := *NewHashSet[T]()
 
 	return &dfsIterator[T]{
 		getNexts:  getNexts,
@@ -41,7 +41,7 @@ func NewIteratorDFS[T comparable](root T, getNexts func(T) []T) *dfsIterator[T] 
 type bfsIterator[T comparable] struct {
 	getNexts  func(T) []T
 	toAnalyze Queue[T]
-	visited   Set[T]
+	visited   HashSet[T]
 }
 
 func (it *bfsIterator[T]) HasNext() bool {
@@ -63,12 +63,12 @@ func (it *bfsIterator[T]) Next() T {
 func NewIteratorBFS[T comparable](root T, getNexts func(T) []T) *bfsIterator[T] {
 	toAnalyze := *NewQueue[T](nil)
 	toAnalyze.Enqueue(root)
-	visited := *NewSet[T]()
+	visited := *NewHashSet[T]()
 	visited.Add(root)
 
 	return &bfsIterator[T]{
 		getNexts:  getNexts,
 		toAnalyze: toAnalyze,
-		visited:   *NewSet[T](),
+		visited:   *NewHashSet[T](),
 	}
 }

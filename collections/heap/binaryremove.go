@@ -4,7 +4,7 @@ import "github.com/lorenzotinfena/goji/collections"
 
 type BinaryHeapWithRemove[T comparable] struct {
 	s     []T
-	m     map[T]*collections.Set[int]
+	m     map[T]*collections.HashSet[int]
 	prior func(T, T) bool
 }
 
@@ -15,7 +15,7 @@ func NewBinaryHeapWithRemoveFromSlice[T comparable](
 ) (h *BinaryHeapWithRemove[T]) {
 	h = &BinaryHeapWithRemove[T]{
 		s:     s,
-		m:     make(map[T]*collections.Set[int]),
+		m:     make(map[T]*collections.HashSet[int]),
 		prior: prior,
 	}
 	if h.Len() > 1 {
@@ -27,7 +27,7 @@ func NewBinaryHeapWithRemoveFromSlice[T comparable](
 }
 
 func NewBinaryHeapWithRemove[T comparable](Prior func(T, T) bool) *BinaryHeapWithRemove[T] {
-	return &BinaryHeapWithRemove[T]{s: make([]T, 0), m: make(map[T]*collections.Set[int]), prior: Prior}
+	return &BinaryHeapWithRemove[T]{s: make([]T, 0), m: make(map[T]*collections.HashSet[int]), prior: Prior}
 }
 
 func (h *BinaryHeapWithRemove[T]) Len() int {
@@ -37,7 +37,7 @@ func (h *BinaryHeapWithRemove[T]) Len() int {
 func (h *BinaryHeapWithRemove[T]) Push(value T) {
 	set, exist := h.m[value]
 	if !exist {
-		h.m[value] = collections.NewSet[int]()
+		h.m[value] = collections.NewHashSet[int]()
 		set = h.m[value]
 	}
 	set.Add(len(h.s))
